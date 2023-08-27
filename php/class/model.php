@@ -15,7 +15,7 @@ class model
         // $dsn = "mysql:host=$db_host;dbname=$db_name;charset=utf8mb4";
 
         // connect to sqlite my-db-users.sqlite
-        $db_name = __DIR__ . "/../my-data/db-users.sqlite";
+        $db_name = __DIR__ . "/../../my-data/db-users.sqlite";
         $db_name = realpath($db_name);
         // var_dump($db_name);
         $dsn = "sqlite:$db_name";
