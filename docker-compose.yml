@@ -23,6 +23,8 @@ services:
             # - PHP_ROOT=/app/php
             # - PHP_SERVER=php -S appcron:4321 -t /app/php/public /app/php/public/index.php
             # - PHP_SERVER=php -S appcron:4321 -t /app/root /app/root/index.php
+            # warning: dev only
+            - ADMINER_PASSWORD=admin
         # warning: if overriding files in images, permissions may be wrong (+x)
         volumes:
             - ./minute:/app/minute
