@@ -25,8 +25,10 @@ RUN apk add --no-cache \
     php82-pecl-imagick \
     ffmpeg \
     busybox-extras \
+    && touch /app/cmd.sh \
     && rm -rf /var/cache/apk/*
 
+CMD /app/cmd.sh
 
 # FIXME: Conflict with MacOS already using port 25
 # mail port
@@ -34,23 +36,6 @@ RUN apk add --no-cache \
 
 # RUN docker-php-ext-configure mysqli && docker-php-ext-install mysqli
 
-ENV TZ=Europe/Paris
-
-USER root
-
-WORKDIR /app
-
-# CURRENT DIR MUST CONTAIN FILES: 
-# crontab-root, cmd.sh
-COPY . /app
-
-# root cron file is located at 
-# /var/spool/cron/crontabs/root
-RUN cp /app/crontab-root /var/spool/cron/crontabs/root \ 
-    && chmod +x /app/*.sh
-
-
-CMD /app/cmd.sh
 
 
 # add a new image to cron-php
@@ -61,3 +46,29 @@ FROM cron-php AS cron-php-chromium
 RUN apk add --no-cache \
     chromium \
     && rm -rf /var/cache/apk/*
+
+
+# add a new image to cron-php-chromium
+FROM cron-php-chromium AS cron-php-chromium-jupyter
+# add about 170 Mo disk space
+
+RUN apk add --no-cache \
+    jupyter-notebook \
+    && rm -rf /var/cache/apk/*
+
+ENV TZ=Europe/Paris
+
+USER root
+
+WORKDIR /app
+
+# tip: keep at the end to avoid re-run all the time
+# CURRENT DIR MUST CONTAIN FILES: 
+# crontab-root, cmd.sh
+COPY . /app
+
+# root cron file is located at 
+# /var/spool/cron/crontabs/root
+RUN cp /app/crontab-root /var/spool/cron/crontabs/root \ 
+    && chmod +x /app/*.sh
+

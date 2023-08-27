@@ -6,7 +6,8 @@ services:
             context: ./image-cron-php
             # dockerfile: Dockerfile
             # target: cron-php
-            target: cron-php-chromium
+            # target: cron-php-chromium
+            target: cron-php-chromium-jupyter
         restart: always
         # extra_hosts:
             # FIXME: not working 

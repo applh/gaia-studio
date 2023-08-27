@@ -37,6 +37,12 @@ $now = date('Y-m-d H:i:s');
             text-align: center;
             font-size: 2rem;
         }
+        h2, h3 {
+            text-align: center;
+        }
+        p {
+            padding: 1rem;
+        }
         img {
             width: 100%;
             height: auto;
@@ -51,6 +57,11 @@ $now = date('Y-m-d H:i:s');
                 margin: 0;
                 padding: 0;
             }
+            /* add page break between section */
+            section {
+                page-break-before: always;
+                page-break-after: always;
+            }
         }
     </style>
 </head>
@@ -60,6 +71,30 @@ $now = date('Y-m-d H:i:s');
     <main>
         <h1>Hello <?php echo $now; ?></h1>
         <img src="/assets/photo.jpg" alt="photo">
+        <section class="s2">
+            <h2>Section 2</h2>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nihil, voluptatem nobis quod a non sit praesentium enim illo. Ex ad repellendus nobis commodi hic iure est cumque, tenetur repellat quas!</p>
+            <section class="h3">
+                <h3>title 3</h3>
+                <img src="/assets/photo.jpg" alt="" srcset="">
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum.</p>
+            </section>
+            <section class="h3">
+                <h3>title 3</h3>
+                <img src="/assets/photo.jpg" alt="" srcset="">
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum.</p>
+            </section>
+            <section class="h3">
+                <h3>title 3</h3>
+                <img src="/assets/photo.jpg" alt="" srcset="">
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum.</p>
+            </section>
+            <section class="h3">
+                <h3>title 3</h3>
+                <img src="/assets/photo.jpg" alt="" srcset="">
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum.</p>
+            </section>
+        </section>
     </main>
     <footer>
         <div class="info"></div>

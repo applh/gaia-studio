@@ -21,4 +21,19 @@ do
         php $task
         echo
     fi
+    if [ ${task: -6} == ".ipynb" ]; then
+        mkdir -p /app/my-data/ipynb 
+        # date in format ymd-his
+        now=$(date +"%Y%m%d-%H%M%S")
+        echo
+        echo "-- running jupyter $task"
+        echo
+        which jupyter
+        filename=$(basename -- "$task")
+        echo $filename
+        cmd="jupyter nbconvert --to notebook -y --execute --output $now-$filename --output-dir /app/my-data/ipynb $task"
+        echo $cmd
+        jupyter nbconvert --to notebook -y --execute --output $now-$filename --output-dir /app/my-data/ipynb $task
+        echo
+    fi
 done
