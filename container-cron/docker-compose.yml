@@ -1,0 +1,19 @@
+version: "3.9"
+
+services:
+    appcron:
+        build: .
+        restart: always
+        ports:
+            - 4321:4321
+        environment:
+            - CONTAINER_NAME=appcron
+            - CONTAINER_PORT=4321
+            - APP_PHP=../php/index.php
+            # - PHP_ROOT=/app/php
+            # - PHP_SERVER=php -S appcron:4321 -t /app/php/public /app/php/public/index.php
+            # - PHP_SERVER=php -S appcron:4321 -t /app/root /app/root/index.php
+        # warning: if overriding files in mages, permissions may be wrong (+x)
+        volumes:
+            - ./minute:/app/minute
+            - ./php:/app/php
