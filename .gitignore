@@ -1,0 +1,11 @@
+# MacOS 
+.DS_Store
+
+# Node
+node_modules
+
+# PHP
+vendor
+
+# custom
+my-*

@@ -2,18 +2,28 @@ version: "3.9"
 
 services:
     appcron:
-        build: ./image-cron-php
+        build: 
+            context: ./image-cron-php
+            # dockerfile: Dockerfile
+            # target: cron-php
+            target: cron-php-chromium
         restart: always
+        # extra_hosts:
+            # FIXME: not working 
+            # - "gateway.docker.internal:host-gateway"
+            # - "host.docker.internal:host-gateway"
         ports:
-            - 4321:4321
+            - 3666:80
+            # - 25:25 # smtp # problem: port already in use
         environment:
+            # FIXME: automatic setup of these variables from docker ?!
             - CONTAINER_NAME=appcron
-            - CONTAINER_PORT=4321
+            # - CONTAINER_PORT=80
             - APP_PHP=../php/index.php
             # - PHP_ROOT=/app/php
             # - PHP_SERVER=php -S appcron:4321 -t /app/php/public /app/php/public/index.php
             # - PHP_SERVER=php -S appcron:4321 -t /app/root /app/root/index.php
-        # warning: if overriding files in mages, permissions may be wrong (+x)
+        # warning: if overriding files in images, permissions may be wrong (+x)
         volumes:
             - ./minute:/app/minute
             - ./php:/app/php

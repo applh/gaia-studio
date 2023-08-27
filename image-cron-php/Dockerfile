@@ -1,17 +1,38 @@
-FROM alpine:latest
+FROM alpine:latest AS cron-php
+# add about 250 Mo disk space
 
-# cron is already installed in alpine
+# cron, sendmail is already installed in alpine / busybox
+# warning: 
+    # about 150 Mo disk space
+    # php82-pecl-imagick \
+    # about 60 Mo disk space
+    # ffmpeg \
+
 RUN apk update && \
     apk add --no-cache \
     tzdata \
     curl \
     php82 \
-    php82-sqlite3 php82-pdo_sqlite php82-pdo_mysql \
-    php82-curl php82-gd php82-mbstring php82-opcache \
-    php82-zip \
+    php82-sqlite3 php82-pdo_sqlite php82-pdo_mysql php82-mysqli \
+    php82-gd php82-curl php82-zip php82-mbstring php82-bcmath php82-opcache \
+    php82-gettext php82-intl php82-exif php82-sockets \ 
+    php82-pecl-memcached php82-pecl-ssh2 \
     && ln -s /usr/bin/php82 /usr/local/bin/php \
     && rm -rf /var/cache/apk/* \
     && mkdir -p /app/log
+
+RUN apk add --no-cache \
+    php82-pecl-imagick \
+    ffmpeg \
+    busybox-extras \
+    && rm -rf /var/cache/apk/*
+
+
+# FIXME: Conflict with MacOS already using port 25
+# mail port
+# EXPOSE 25
+
+# RUN docker-php-ext-configure mysqli && docker-php-ext-install mysqli
 
 ENV TZ=Europe/Paris
 
@@ -30,3 +51,13 @@ RUN cp /app/crontab-root /var/spool/cron/crontabs/root \
 
 
 CMD /app/cmd.sh
+
+
+# add a new image to cron-php
+FROM cron-php AS cron-php-chromium
+# add about 450 Mo disk space
+    # chromium \
+
+RUN apk add --no-cache \
+    chromium \
+    && rm -rf /var/cache/apk/*
