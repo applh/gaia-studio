@@ -2,10 +2,16 @@
 
 class index
 {
+    static $path_data = __DIR__ . "/../my-data";
+    static $hostname = "localhost";
+
     static function web ()
     {
         // autoloader        
         spl_autoload_register("index::autoload");
+
+        // setup
+        index::setup();
 
         // run
         index::run();
@@ -14,7 +20,50 @@ class index
     static function autoload ($class_name)
     {
         $class_name = str_replace("\\", "/", $class_name);
-        include __DIR__ . "/class/$class_name.php";
+        // remove namespace
+        $class_name = basename($class_name);
+        // cehck if file exists
+        $search_file = __DIR__ . "/class/$class_name.php";
+        if (file_exists($search_file)) {
+            include $search_file;
+        }
+    }
+
+    static function setup ()
+    {
+        cli::kv("root", __DIR__);
+        cli::kv("path_data", realpath(static::$path_data));
+        // get host
+        $host = $_SERVER['HTTP_HOST'] ?? "localhost";
+        // remove port if any
+        $host = explode(":", $host)[0];
+        error_log("host: $host");
+        static::$hostname = $host;
+
+        $path_data_host = static::$path_data . "/site-" . static::$hostname;
+        $path_data_host = realpath($path_data_host);
+        if ($path_data_host) {
+            // check if config.php exists
+            $path_config = $path_data_host . "/config.php";
+            if (file_exists($path_config)) {
+                // include config.php
+                include $path_config;
+            }
+            else {
+                error_log("config.php not found: $path_config");
+            }
+        }
+        else {
+            error_log("path_data_host not found: $path_data_host");
+        }
+        
+
+        // host can be the name used by the browser
+        // host can be the name used by the server (example: cron job)
+
+        // server name is docker container name
+        // $server_name  = $_SERVER['SERVER_NAME'] ?? "localhost";
+        // error_log("server_name: $server_name");
     }
 
     static function run ()
@@ -51,7 +100,18 @@ class index
 
     static function asset ($filename, $extension)
     {
-        $file = __DIR__ . "/../my-data/assets/$filename.$extension";
+        $searchs = [
+            __DIR__ . "/../my-data/assets/$filename.$extension",
+            __DIR__ . "/templates/assets/$filename.$extension",
+        ];
+        // search for file
+        $file = "";
+        foreach ($searchs as $search) {
+            if (file_exists($search)) {
+                $file = $search;
+                break;
+            }
+        }
         // error_log($file);
         if (file_exists($file)) {
             $mimes = [
