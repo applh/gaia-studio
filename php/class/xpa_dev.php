@@ -6,7 +6,7 @@ class xpa_dev
     {
         if (!class_exists($classname)) {
             // create a new class from callback
-            $path_root = cli::kv("root");
+            $path_root = xpa_os::kv("root");
             $path_class = $path_root . "/class";
 
             $src_code = static::code_class($classname);

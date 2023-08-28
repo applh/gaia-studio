@@ -16,7 +16,7 @@ $now = date('Y-m-d H:i:s');
             min-height: 100vh;
             margin: 0;
             padding: 0;
-            font-family: Arial, Helvetica, sans-serif;
+            font-family: 'noto-emoji', Arial, Helvetica, sans-serif;
             background-color: #ccc;
             min-height: 100vw;
             font-size:2vw;
@@ -70,6 +70,7 @@ $now = date('Y-m-d H:i:s');
     <header></header>
     <main>
         <h1>Hello <?php echo $now; ?></h1>
+        <h1>test emoji 🔥 ✅ 🎁 ⭐️</h1>
         <img src="/assets/photo.jpg" alt="photo">
         <section class="s2">
             <h2>Section 2</h2>

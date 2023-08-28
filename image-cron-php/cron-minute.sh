@@ -5,7 +5,7 @@ echo "cron minute"
 curdir=`dirname $0`
 
 # find every minute/* and run it
-tasks=$(ls $curdir/minute/*)
+tasks=$(ls $curdir/minute/*.*)
 for task in $tasks
 do
     # cat $task

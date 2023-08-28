@@ -7,9 +7,6 @@ class index
 
     static function web ()
     {
-        // autoloader        
-        spl_autoload_register("index::autoload");
-
         // setup
         index::setup();
 
@@ -31,18 +28,29 @@ class index
 
     static function setup ()
     {
-        cli::kv("root", __DIR__);
-        cli::kv("path_data", realpath(static::$path_data));
+        // autoloader        
+        spl_autoload_register("index::autoload");
+        // composer vendor
+        $path_vendor = __DIR__ . "/vendor/autoload.php";
+        if (file_exists($path_vendor)) {
+            include $path_vendor;
+        }
+
+        xpa_os::kv("root", __DIR__);
+        xpa_os::kv("path_data", realpath(static::$path_data));
         // get host
         $host = $_SERVER['HTTP_HOST'] ?? "localhost";
         // remove port if any
         $host = explode(":", $host)[0];
-        error_log("host: $host");
+        // error_log("host: $host");
         static::$hostname = $host;
 
         $path_data_host = static::$path_data . "/site-" . static::$hostname;
         $path_data_host = realpath($path_data_host);
         if ($path_data_host) {
+            // store the path data host
+            xpa_os::kv("path_data_host", $path_data_host);
+
             // check if config.php exists
             $path_config = $path_data_host . "/config.php";
             if (file_exists($path_config)) {
@@ -50,11 +58,11 @@ class index
                 include $path_config;
             }
             else {
-                error_log("config.php not found: $path_config");
+                // error_log("config.php not found: $path_config");
             }
         }
         else {
-            error_log("path_data_host not found: $path_data_host");
+            // error_log("path_data_host not found: $path_data_host");
         }
         
 
@@ -82,58 +90,38 @@ class index
 
         $extension ??= 'php';
         
-        // if path starts with /assets then serve file
-        if (str_starts_with($path, "/assets")) {
-            index::asset($filename, $extension);
+        // dir parts
+        $dirname2 = trim($dirname, "/");
+        $dirs = [];
+        $nb_dirs = 0;
+        if ($dirname2) {
+            $dirs = explode("/", $dirname2);
+            $nb_dirs = count($dirs);    
+        }
+        // store dirs, filenae, extension
+        xpa_os::kv("uri", $uri);
+        xpa_os::kv("path", $path);
+        xpa_os::kv("dirs", $dirs);
+        xpa_os::kv("filename", $filename);
+        xpa_os::kv("extension", $extension);
+
+        // debug
+        // error_log($dirname2);
+        // error_log(print_r($dirs, true));
+
+        if ($nb_dirs == 0) {
+            xpa_route_pages::index();
         }
         else {
-            $template = $filename;
-            $path_template = __DIR__ . "/templates/$template.php";
-            if (!file_exists($path_template)) {
-                $template = "404";
-                $path_template = __DIR__ . "/templates/$template.php";
+            // if path starts with /assets then serve file
+            if ("assets" == ($dirs[0] ?? "")) {
+                xpa_route_assets::index();
             }
 
-            include $path_template;    
         }
     }
 
-    static function asset ($filename, $extension)
-    {
-        $searchs = [
-            __DIR__ . "/../my-data/assets/$filename.$extension",
-            __DIR__ . "/templates/assets/$filename.$extension",
-        ];
-        // search for file
-        $file = "";
-        foreach ($searchs as $search) {
-            if (file_exists($search)) {
-                $file = $search;
-                break;
-            }
-        }
-        // error_log($file);
-        if (file_exists($file)) {
-            $mimes = [
-                "css" => "text/css",
-                "js" => "text/javascript",
-                "jpg" => "image/jpeg",
-                "png" => "image/png",
-                "gif" => "image/gif",
-                "svg" => "image/svg+xml",
-                "ico" => "image/x-icon",
-                "json" => "application/json",
-                "pdf" => "application/pdf",
-                "zip" => "application/zip",
-                "mp3" => "audio/mpeg",
-                "mp4" => "video/mp4",
-            ];
-            $mime = $mimes[$extension] ?? mime_content_type($file);
-            header("Content-Type: $mime");
-            readfile($file);
-        }
 
-    }
 }
 
 index::web();

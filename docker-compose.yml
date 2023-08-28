@@ -14,6 +14,7 @@ services:
             # - "gateway.docker.internal:host-gateway"
             # - "host.docker.internal:host-gateway"
         ports:
+            # - 9000:9000
             - 3666:80
             # - 25:25 # smtp # problem: port already in use
         environment:
@@ -24,10 +25,30 @@ services:
             # - PHP_ROOT=/app/php
             # - PHP_SERVER=php -S appcron:4321 -t /app/php/public /app/php/public/index.php
             # - PHP_SERVER=php -S appcron:4321 -t /app/root /app/root/index.php
+            # - PHP_SERVER=php-fpm82 -R -F 
             # warning: dev only
             - ADMINER_PASSWORD=admin
         # warning: if overriding files in images, permissions may be wrong (+x)
         volumes:
             - ./minute:/app/minute
+            - ./php-fpm-www.conf:/etc/php82/php-fpm.d/www.conf
             - ./php:/app/php
             - ./my-data:/app/my-data
+
+    nginx-webserver:
+        image: nginx:latest
+        restart: always
+        ports:
+            - "${XP_ENV_PORT:-4321}:80"
+        depends_on:
+            - appcron
+        volumes:
+            - ./nginx-templates:/etc/nginx/templates
+
+
+#location / {
+#        root   /usr/share/nginx/html;
+#        index  index.html index.htm;
+#    }
+
+# /etc/php82/php-fpm.d/www.conf

@@ -20,6 +20,21 @@ if [ -z "$php_server" ]; then
     php_server="php -S ${container_name}:${container_port} -t ${php_root} ${php_root}/index.php"
 fi
 
+which php-fpm82
+
+php-fpm82 -t
+
+# launch in daemon mode
+# php-fpm82 -R -D 
+
+# php_server="php-fpm82 -R -F 9000"
+
+# OK
+# php-fpm82 -R -F 
+
+# launch PHP-FPM in daemon mode
+php-fpm82 -R
+
 echo "php server: $php_server"
 # run php server
 $php_server

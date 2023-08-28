@@ -2,6 +2,10 @@
 
 $now = date('Y-m-d H:i:s');
 
+$path = xpa_os::kv("path");
+$filename = xpa_os::kv("filename");
+$extension = xpa_os::kv("extension");
+
 $response = [];
 
 $response['now'] = $now;

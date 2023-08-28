@@ -18,10 +18,25 @@ This Docker container is build to provide very useful features
 
 https://mixu.wtf/cron-in-docker-alpine-image/
 
+## NGINX + PHP-FPM
+
+* AI must be able to instrospect itself
+* As the docker container is a web server, 
+  * then an incoming request should be able to re-launch some other recursive requests
+  * problem: if using the PHP built-in web-server, 
+  * each request is blocking the others until finished
+  * => impossible to have recursive requests
+
+
 ## Chromium Headless
 
 * https://developer.chrome.com/articles/new-headless/
 
+* FIXME:
+
+* Solved
+  * chromium headless doesn't load ttf fonts ?!
+    * add Alpine several font packages (ttf, emoji, ...)  
 
 ```
 chromium --headless --print-to-pdf https://applh.com
@@ -46,3 +61,16 @@ chromium --no-sandbox --headless --disable-gpu --print-to-pdf=./output2.pdf http
 chromium --no-sandbox --headless --disable-gpu --print-to-pdf --no-pdf-header --no-pdf-footer ./output2.pdf https://applh.com
 
 ```
+
+
+### PHP / chrome-php
+
+https://github.com/chrome-php/chrome#evaluate-script-on-the-page
+
+### Playwright Python
+
+* Docker
+* https://playwright.dev/python/docs/docker
+* https://github.com/microsoft/playwright-python/blob/main/utils/docker/Dockerfile.jammy
+
+

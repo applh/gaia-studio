@@ -1,5 +1,10 @@
 <?php
 
+// debug
+// error_log(print_r(getenv(), true));
+// print_r(getenv());
+// FIXME: env is empty when called by nginx -> php-fpm
+
 $app_php = (getenv('APP_PHP'));
 if (!empty($app_php)) {
     $path_app0 = __DIR__ . "/$app_php";

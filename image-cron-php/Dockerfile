@@ -12,11 +12,12 @@ RUN apk update && \
     apk add --no-cache \
     tzdata \
     curl \
-    php82 \
+    php82-fpm \
     php82-sqlite3 php82-pdo_sqlite php82-pdo_mysql php82-mysqli \
     php82-gd php82-curl php82-zip php82-mbstring php82-bcmath php82-opcache \
-    php82-gettext php82-intl php82-exif php82-sockets \ 
+    php82-gettext php82-intl php82-exif php82-sockets \
     php82-pecl-memcached php82-pecl-ssh2 \
+    php82-phar composer \ 
     && ln -s /usr/bin/php82 /usr/local/bin/php \
     && rm -rf /var/cache/apk/* \
     && mkdir -p /app/log
@@ -44,9 +45,14 @@ FROM cron-php AS cron-php-chromium
     # chromium \
 
 RUN apk add --no-cache \
+    font-util \
+    ttf-freefont \
+    font-noto-emoji \
     chromium \
     && rm -rf /var/cache/apk/*
 
+# not available in alpine ?!
+#     font-twemoji \
 
 # add a new image to cron-php-chromium
 FROM cron-php-chromium AS cron-php-chromium-jupyter
@@ -54,6 +60,7 @@ FROM cron-php-chromium AS cron-php-chromium-jupyter
 
 RUN apk add --no-cache \
     jupyter-notebook \
+    py3-pip py3-sqlalchemy py3-opencv \
     && rm -rf /var/cache/apk/*
 
 ENV TZ=Europe/Paris
@@ -72,3 +79,4 @@ COPY . /app
 RUN cp /app/crontab-root /var/spool/cron/crontabs/root \ 
     && chmod +x /app/*.sh
 
+EXPOSE 9000
