@@ -15,6 +15,10 @@ class cron_job
         $suffix = date("ymd_His");
         $classname ??= "ai_cron_$suffix";
         if ($classname ?? false) {
+
+            // set env APP_MODE=cron_job
+            putenv("APP_MODE=cron_job");
+            
             // load gaia starter
             include __DIR__ . "/../php/index.php";
 

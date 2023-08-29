@@ -10,12 +10,14 @@ class index
         // setup
         index::setup();
 
-        if (is_callable("cron_job::run")) {
-            error_log("cron_job::run()");
-        }
-        else {
+        $app_mode = getenv("APP_MODE") ?: "web";
+        // warning: will slow down the server if search class in db
+        if ($app_mode == "web") {
             // run
             index::web();
+        }
+        else {
+            error_log("APP_MODE... $app_mode");
         }
     }
 
@@ -38,9 +40,9 @@ class index
         foreach ($loaders as $loader) {
             if (is_callable($loader)) {
                 $found = $loader($class_name);
-            }
-            if ($found) {
-                return $found;
+                if ($found) {
+                    return $found;
+                }
             }
         }
 
@@ -61,6 +63,12 @@ class index
 
     static function autoload_db ($class_name)
     {
+        // FIXME: check performance as can be very slow ?!
+        // check if why slow :
+        // ? db read 
+        // ? or cache file write/read
+        error_log("autoload_db($class_name)");
+
         // check if row exists in db with filename = $class_name
         $found = false;
         $md5 = md5($class_name);

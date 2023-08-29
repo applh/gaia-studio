@@ -61,6 +61,7 @@ FROM cron-php-chromium AS cron-php-chromium-jupyter
 RUN apk add --no-cache \
     jupyter-notebook \
     py3-pip py3-sqlalchemy py3-opencv \
+    mysql-client \
     && rm -rf /var/cache/apk/*
 
 ENV TZ=Europe/Paris

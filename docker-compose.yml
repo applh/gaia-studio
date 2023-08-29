@@ -43,6 +43,7 @@ services:
             - ./php-fpm-www.conf:/etc/php82/php-fpm.d/www.conf
             - ./php:/app/php
             - ./my-data:/app/my-data
+            - app_tmp:/app/tmp
 
     # https://hub.docker.com/_/nginx
     nginx-webserver:
@@ -57,7 +58,7 @@ services:
 
 volumes:
     db_data:
-
+    app_tmp:
 
 #location / {
 #        root   /usr/share/nginx/html;
