@@ -16,7 +16,7 @@ class xpa_model
 
     static $requests = [];
 
-    static function connect ()
+    static function connect()
     {
         static $pdo = null;
 
@@ -32,9 +32,8 @@ class xpa_model
             // error_log("xpa_model::connect() db_dsn: $db_dsn");
 
             $pdo ??= new PDO($db_dsn, $db_user, $db_password);
-        }
-        else {
-            error_log("xpa_model::connect() no db_dsn");  
+        } else {
+            error_log("xpa_model::connect() no db_dsn");
         }
 
         return $pdo;
@@ -54,7 +53,7 @@ class xpa_model
         return response::$rows;
     }
 
-    static function send_sql ($sql)
+    static function send_sql($sql, $data = [])
     {
         try {
             error_log($sql);
@@ -63,14 +62,27 @@ class xpa_model
             // connect
             $pdo = xpa_model::connect();
             $stmt = $pdo->prepare($sql);
-            $stmt->execute();
+            $stmt->execute($data);
             response::$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        }
-        catch (PDOException $e) {
+        } catch (PDOException $e) {
             error_log("xpa_model::send_sql() PDOException: " . $e->getMessage());
         }
         return $stmt ?? null;
     }
+
+    static function insert($table = null, $data = [])
+    {
+        $table ??= "users";
+
+        $sql = "INSERT INTO `$table` ( `";
+        $sql .= implode("`, `", array_keys($data));
+        $sql .= "` ) VALUES ( :";
+        $sql .= implode(", :", array_keys($data));
+        $sql .= " )";
+
+        xpa_model::send_sql($sql, $data);
+    }
+
     //#class_end
 }
 

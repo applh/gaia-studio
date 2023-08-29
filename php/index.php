@@ -5,11 +5,22 @@ class index
     static $path_data = __DIR__ . "/../my-data";
     static $hostname = "localhost";
 
-    static function web ()
+    static function starter ()
     {
         // setup
         index::setup();
 
+        if (is_callable("cron_job::run")) {
+            error_log("cron_job::run()");
+        }
+        else {
+            // run
+            index::web();
+        }
+    }
+
+    static function web ()
+    {
         // run
         index::run();
     }
@@ -143,4 +154,4 @@ class index
 
 }
 
-index::web();
+index::starter();
