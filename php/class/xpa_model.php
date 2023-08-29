@@ -1,4 +1,5 @@
 <?php
+
 /**
  * xpa_model
  * 
@@ -39,31 +40,51 @@ class xpa_model
         return $pdo;
     }
 
-    static function read($table = null, $limit = 100, $offset = 0, $order_by = "ORDER BY id DESC")
+    static function read($table = null, $limit = 100, $offset = 0, $order_by = "ORDER BY id DESC", $where = "")
     {
         $table ??= "users";
 
         // limit and offset must be positive
         $limit = max(0, $limit);
         $offset = max(0, $offset);
+        // trim where
+        $where = trim($where);
+        // if where is not empty, add WHERE
+        if ($where) {
+            $where = "WHERE $where";
+        }
 
-        $sql = "SELECT * FROM `$table` $order_by LIMIT $limit OFFSET $offset";
+        $sql = "SELECT * FROM `$table` $where $order_by LIMIT $limit OFFSET $offset";
+
+        error_log($sql);
+
         xpa_model::send_sql($sql);
 
-        return response::$rows;
+        return xpa_response::$rows;
+    }
+
+    static function read1 ($table, $col="id", $value="")
+    {
+        $table ??= "users";
+
+        $sql = "SELECT * FROM `$table` WHERE `$col` = :$col LIMIT 1";
+
+        xpa_model::send_sql($sql, ["$col" => $value]);
+        $founds = xpa_response::$rows;
+        return $founds[0] ?? null;
     }
 
     static function send_sql($sql, $data = [])
     {
         try {
-            error_log($sql);
+            // error_log($sql);
             // store requests
             xpa_model::$requests[] = $sql;
             // connect
             $pdo = xpa_model::connect();
             $stmt = $pdo->prepare($sql);
             $stmt->execute($data);
-            response::$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            xpa_response::$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             error_log("xpa_model::send_sql() PDOException: " . $e->getMessage());
         }
@@ -81,6 +102,34 @@ class xpa_model
         $sql .= " )";
 
         xpa_model::send_sql($sql, $data);
+        // return last insert id
+        return xpa_model::connect()->lastInsertId();
+    }
+
+    static function delete($table = null, $id = null)
+    {
+        $table ??= "users";
+
+        $sql = "DELETE FROM `$table` WHERE id = :id";
+
+        xpa_model::send_sql($sql, ["id" => $id]);
+    }
+
+    static function update($table = null, $id = null, $data = [])
+    {
+        $table ??= "users";
+
+        $sql = "UPDATE `$table` SET ";
+
+        // Prepare the SQL statement
+        $set_values = '';
+        foreach ($data as $key => $value) {
+            $set_values .= "$key = :$key, ";
+        }
+        $set_values = rtrim($set_values, ', ');
+        $sql = "UPDATE $table SET $set_values WHERE id = :id";
+
+        xpa_model::send_sql($sql, ["id" => $id] + $data);
     }
 
     //#class_end

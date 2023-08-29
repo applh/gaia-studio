@@ -27,14 +27,69 @@ class index
 
     static function autoload ($class_name)
     {
+        $found = false;
         $class_name = str_replace("\\", "/", $class_name);
         // remove namespace
         $class_name = basename($class_name);
-        // cehck if file exists
+        $loaders = [
+            "index::autoload_file",
+            "index::autoload_db",
+        ];
+        foreach ($loaders as $loader) {
+            if (is_callable($loader)) {
+                $found = $loader($class_name);
+            }
+            if ($found) {
+                return $found;
+            }
+        }
+
+        return $found;
+    }
+
+    static function autoload_file ($class_name)
+    {
+        $found = false;
+        // check if file exists
         $search_file = __DIR__ . "/class/$class_name.php";
         if (file_exists($search_file)) {
             include $search_file;
+            $found = true;
         }
+        return $found;
+    }
+
+    static function autoload_db ($class_name)
+    {
+        // check if row exists in db with filename = $class_name
+        $found = false;
+        $md5 = md5($class_name);
+        // FIXME: use path_cache from config.php
+        $path_cache = xpa_os::kv("path_cache") ?? "/app/tmp";
+        $path_md5 = "$path_cache/class-$md5.php";
+        // if cache file exists include it
+        if (file_exists($path_md5)) {
+            include $path_md5;
+            $found = true;
+        }
+
+        // search in db
+        // WARNING: this is only available after the db is setup
+        if (!$found && is_writable($path_cache)) {
+            $row = xpa_model::read1("code", "filename", $class_name);
+            if ($row ?? false) {
+                $code = $row["code"] ?? "";
+                if ($code) {
+                    // create the cache file
+                    file_put_contents($path_md5, $code);
+                    // include the cache file
+                    include $path_md5;
+                    $found = true;
+                }                
+            }
+    
+        }
+        return $found;
     }
 
     static function setup ()
