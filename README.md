@@ -73,4 +73,3 @@ https://github.com/chrome-php/chrome#evaluate-script-on-the-page
 * https://playwright.dev/python/docs/docker
 * https://github.com/microsoft/playwright-python/blob/main/utils/docker/Dockerfile.jammy
 
-

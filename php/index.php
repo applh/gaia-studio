@@ -36,18 +36,37 @@ class index
             include $path_vendor;
         }
 
-        xpa_os::kv("root", __DIR__);
-        xpa_os::kv("path_data", realpath(static::$path_data));
-        // get host
-        $host = $_SERVER['HTTP_HOST'] ?? "localhost";
-        // remove port if any
-        $host = explode(":", $host)[0];
-        // error_log("host: $host");
-        static::$hostname = $host;
+        static::$path_data = realpath(static::$path_data);
+        if (static::$path_data) {
+            xpa_os::kv("root", __DIR__);
+            // store the path data
+            xpa_os::kv("path_data", static::$path_data);
+            // get host
+            $host = $_SERVER['HTTP_HOST'] ?? "localhost";
+            // remove port if any
+            $host = explode(":", $host)[0];
+            // error_log("host: $host");
+            static::$hostname = $host;
 
-        $path_data_host = static::$path_data . "/site-" . static::$hostname;
-        $path_data_host = realpath($path_data_host);
-        if ($path_data_host) {
+            $path_data_host = static::$path_data . "/site-" . static::$hostname;
+            $path_data_host = realpath($path_data_host);
+        }
+        else {
+            // error_log("path_data not found: " . static::$path_data);
+        }
+
+        if (static::$path_data) {
+            $path_config = static::$path_data . "/config.php";
+            if (file_exists($path_config)) {
+                // include config.php
+                include $path_config;
+            }
+            else {
+                error_log("config.php not found: $path_config");
+            }
+        }
+
+        if ($path_data_host ?? false) {
             // store the path data host
             xpa_os::kv("path_data_host", $path_data_host);
 

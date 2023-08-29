@@ -1,8 +1,8 @@
 <?php
 
-// $url = "https://applh.com";
-// $url = "http://php-lh.test:3666/";
-$url = "http://appcron:80";
+require __DIR__ . "/my-config/setup.php";
+
+extract(setup::load(__FILE__));
 
 $curdir = __DIR__;
 $outdir = "$curdir/../my-data/img";
@@ -10,6 +10,10 @@ if (!file_exists($outdir)) {
     mkdir($outdir);
     $outdir = realpath($outdir);
 }
+else {
+    $outdir = realpath($outdir);
+}
+
 echo "Current dir: $curdir\n";
 passthru("whoami");
 passthru("ls -l $curdir");
@@ -18,7 +22,7 @@ $now = date("ymd-His");
 // $ww = 800;
 // $wh = 800;
 $ww = 1600;
-$wh = 1600;
+$wh = 3200;
 
 // webp can be 10x smaller than png
 // $format = "png";

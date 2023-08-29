@@ -1,6 +1,15 @@
 version: "3.9"
 
 services:
+    # https://hub.docker.com/_/mariadb
+    mariadb:
+        image: mariadb:latest
+        restart: always
+        environment:
+            - MARIADB_ROOT_PASSWORD=mariadb
+        volumes:
+            - db_data:/var/lib/mysql
+
     appcron:
         build: 
             context: ./image-cron-php
@@ -35,6 +44,7 @@ services:
             - ./php:/app/php
             - ./my-data:/app/my-data
 
+    # https://hub.docker.com/_/nginx
     nginx-webserver:
         image: nginx:latest
         restart: always
@@ -44,6 +54,9 @@ services:
             - appcron
         volumes:
             - ./nginx-templates:/etc/nginx/templates
+
+volumes:
+    db_data:
 
 
 #location / {

@@ -79,7 +79,7 @@ class xpa_screenshot
             "--no-sandbox",
             "--headless",
             "--disable-gpu",
-            "--print-to-pdf=$outdir/cv2308-$now.pdf",
+            "--print-to-pdf=$outdir/$prefix-$now.pdf",
             "--no-pdf-header-footer",
             "--window-size=$ww,$wh",
             "--timeout=$timeout",

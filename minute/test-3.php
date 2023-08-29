@@ -31,5 +31,5 @@ $options = [
 $cmd = "chromium " . implode(" ", $options) . " $url";
 // $cmd = "chromium --no-sandbox --headless --disable-gpu --print-to-pdf=$outdir/page-$now.pdf --no-pdf-header-footer --window-size=$ww,$wh --timeout=$timeout $url";
 echo "Running command: $cmd\n";
-passthru($cmd);
+// passthru($cmd);
 

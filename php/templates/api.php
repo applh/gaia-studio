@@ -23,7 +23,7 @@ $response['files'] = $_FILES;
 // sqlite request
 $limit = intval($_REQUEST['limit'] ?? 100);
 $offset = intval($_REQUEST['offset'] ?? 0);
-$users = model::read("users", $limit, $offset);
+$users = xpa_model::read("users", $limit, $offset);
 $response["total"] = count($users);
 $response['users'] = $users;
 
