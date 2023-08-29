@@ -9,7 +9,7 @@ class xpa_screenshot
 
         // FIXME: should be in config
         $curdir = __DIR__;
-        $outdir = "$curdir/../../my-data/img";
+        $outdir = "$curdir/../../my-data/cron/img";
         $outdir2 = realpath($outdir);
         if (!file_exists($outdir2)) {
             echo "Creating dir: $outdir\n";
@@ -53,7 +53,7 @@ class xpa_screenshot
 
         // FIXME: should be in config
         $curdir = __DIR__;
-        $outdir = "$curdir/../../my-data/pdf";
+        $outdir = "$curdir/../../my-data/cron/pdf";
         $outdir2 = realpath($outdir);
         if (!file_exists($outdir2)) {
             echo "Creating dir: $outdir\n";

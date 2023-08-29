@@ -22,7 +22,7 @@ do
         echo
     fi
     if [ ${task: -6} == ".ipynb" ]; then
-        mkdir -p /app/my-data/ipynb 
+        mkdir -p /app/my-data/cron/ipynb 
         # date in format ymd-his
         now=$(date +"%Y%m%d-%H%M%S")
         echo
@@ -31,9 +31,9 @@ do
         which jupyter
         filename=$(basename -- "$task")
         echo $filename
-        cmd="jupyter nbconvert --to notebook -y --execute --output $now-$filename --output-dir /app/my-data/ipynb $task"
+        cmd="jupyter nbconvert --to notebook -y --execute --output $now-$filename --output-dir /app/my-data/cron/ipynb $task"
         echo $cmd
-        jupyter nbconvert --to notebook -y --execute --output $now-$filename --output-dir /app/my-data/ipynb $task
+        jupyter nbconvert --to notebook -y --execute --output $now-$filename --output-dir /app/my-data/cron/ipynb $task
         echo
     fi
 done

@@ -5,7 +5,7 @@ require __DIR__ . "/my-config/setup.php";
 extract(setup::load(__FILE__));
 
 $curdir = __DIR__;
-$outdir = "$curdir/../my-data/img";
+$outdir = "$curdir/../my-data/cron/img";
 if (!file_exists($outdir)) {
     mkdir($outdir);
     $outdir = realpath($outdir);
