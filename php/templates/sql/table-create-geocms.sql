@@ -1,6 +1,10 @@
 -- warning: DROP TABLE will delete all data
 DROP TABLE IF EXISTS `geocms`;
 
+-- IMPORTANT: add index on columns used to filter read queries
+-- Performance can be very slow without indexex (+400 ms 😱)
+-- with index performance is very good (< 1 ms 😎)
+
 CREATE TABLE `geocms` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `path` text DEFAULT NULL,
@@ -20,7 +24,10 @@ CREATE TABLE `geocms` (
   `y` double DEFAULT NULL,
   `z` double DEFAULT NULL,
   `t` double DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `path` (`path`(768)),
+  KEY `filename` (`filename`(768)),
+  KEY `created` (`created`(768) DESC)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- type text is limited to 65535 bytes

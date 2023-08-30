@@ -10,14 +10,19 @@ class index
         // setup
         index::setup();
 
-        $app_mode = getenv("APP_MODE") ?: "web";
+        // $app_mode = getenv("APP_MODE") ?: "web";
         // warning: will slow down the server if search class in db
-        if ($app_mode == "web") {
+        // if ($app_mode == "web") {
+        // WARNING: is_callable will try to load class
+        // if (!is_callable("cronjob::run")) {
+            
+        // don't try to load class if not defined
+        if (!class_exists("cronjob", false)) {
             // run
             index::web();
-        }
+        }            
         else {
-            error_log("APP_MODE... $app_mode");
+            // error_log("APP_MODE... $app_mode");
         }
     }
 
@@ -67,7 +72,7 @@ class index
         // check if why slow :
         // ? db read 
         // ? or cache file write/read
-        error_log("autoload_db($class_name)");
+        // error_log("autoload_db($class_name)");
 
         // check if row exists in db with filename = $class_name
         $found = false;
@@ -97,6 +102,7 @@ class index
             }
     
         }
+
         return $found;
     }
 
