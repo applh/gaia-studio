@@ -10,14 +10,8 @@ class index
         // setup
         index::setup();
 
-        // $app_mode = getenv("APP_MODE") ?: "web";
-        // warning: will slow down the server if search class in db
-        // if ($app_mode == "web") {
-        // WARNING: is_callable will try to load class
-        // if (!is_callable("cronjob::run")) {
-            
-        // don't try to load class if not defined
-        if (!class_exists("cronjob", false)) {
+        $app_mode = getenv("APP_MODE") ?: "web";
+        if ($app_mode == "web") {
             // run
             index::web();
         }            
@@ -68,12 +62,6 @@ class index
 
     static function autoload_db ($class_name)
     {
-        // FIXME: check performance as can be very slow ?!
-        // check if why slow :
-        // ? db read 
-        // ? or cache file write/read
-        // error_log("autoload_db($class_name)");
-
         // check if row exists in db with filename = $class_name
         $found = false;
         $md5 = md5($class_name);
@@ -88,6 +76,7 @@ class index
 
         // search in db
         // WARNING: this is only available after the db is setup
+        // WARNING: don't forget SQL index on column filename
         if (!$found && is_writable($path_cache)) {
             $row = xpa_model::read1("code", "filename", $class_name);
             if ($row ?? false) {

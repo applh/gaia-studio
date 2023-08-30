@@ -28,7 +28,21 @@ $wh = 3200;
 // $format = "png";
 $format = "webp";
 
-$cmd = "chromium --no-sandbox --headless --disable-gpu --screenshot=$outdir/page-$now.$format --window-size=$ww,$wh $url";
-echo "Running command: $cmd\n";
-passthru($cmd);
+$urls ??= [];
+// select only one url
+$url_max = 1;
+// random shuffle (not working with associative array)
+$keys = array_keys($urls);
+shuffle($keys);
+// slice $keys to $url_max
+$keys = array_slice($keys, 0, $url_max);
+
+// loop through urls
+foreach ($keys as $name) {
+    $url = $urls[$name];
+    // take screenshot of the page
+    $cmd = "chromium --no-sandbox --headless --disable-gpu --screenshot=$outdir/$name-$now.$format --window-size=$ww,$wh $url";
+    echo "Running command: $cmd\n";
+    passthru($cmd);
+}
 

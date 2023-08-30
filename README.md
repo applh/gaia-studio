@@ -73,3 +73,15 @@ https://github.com/chrome-php/chrome#evaluate-script-on-the-page
 * https://playwright.dev/python/docs/docker
 * https://github.com/microsoft/playwright-python/blob/main/utils/docker/Dockerfile.jammy
 
+### TUTORIALS
+
+#### PHP
+
+* filesystem
+  * a file can store content
+  * a folder can store a file or a sub-folder
+
+* PHP
+  * a variable can store value
+  * an associative array can store a key + value
+    * another array can be stored as value

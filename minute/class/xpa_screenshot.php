@@ -46,6 +46,22 @@ class xpa_screenshot
         
     }
 
+    static function pdf1 ($options=[])
+    {
+        // select random max_urls in $urls
+
+        $urls = $options["urls"] ?? [];
+        $max_urls = $options["max_urls"] ?? 1;
+
+        $keys = array_keys($urls);
+        shuffle($keys);
+        $keys = array_slice($keys, 0, $max_urls);
+        foreach ($keys as $name) {
+            $url = $urls[$name];
+            static::pdf($url, $name, $options);
+        }
+    }
+
     static function pdf ($url, $prefix="page", $options=[])
     {
         // warning will create local variables

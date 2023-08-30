@@ -40,7 +40,7 @@ services:
         # warning: if overriding files in images, permissions may be wrong (+x)
         volumes:
             - ./minute:/app/minute
-            - ./php-fpm-www.conf:/etc/php82/php-fpm.d/www.conf
+            - ./docker-setup/php-fpm-www.conf:/etc/php82/php-fpm.d/www.conf
             - ./php:/app/php
             - ./my-data:/app/my-data
             - app_tmp:/app/tmp
@@ -54,7 +54,7 @@ services:
         depends_on:
             - appcron
         volumes:
-            - ./nginx-templates:/etc/nginx/templates
+            - ./docker-setup/nginx-templates:/etc/nginx/templates
 
 volumes:
     db_data:

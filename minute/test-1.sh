@@ -1,8 +1,8 @@
-echo "test 1"
+# echo "test 1"
 
 #which php
 
-php -v
+# php -v
 
 #php -m
 
