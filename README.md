@@ -85,3 +85,7 @@ https://github.com/chrome-php/chrome#evaluate-script-on-the-page
   * a variable can store value
   * an associative array can store a key + value
     * another array can be stored as value
+
+#### VUE: ELEMENT PLUS
+
+https://element-plus.org/en-US/guide/installation.html#import-in-browser

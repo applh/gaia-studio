@@ -47,6 +47,7 @@ class xpa_route_assets
             $mimes = [
                 "css" => "text/css",
                 "js" => "text/javascript",
+                "mjs" => "text/javascript",
                 "jpg" => "image/jpeg",
                 "png" => "image/png",
                 "gif" => "image/gif",
