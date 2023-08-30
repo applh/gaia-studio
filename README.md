@@ -89,3 +89,6 @@ https://github.com/chrome-php/chrome#evaluate-script-on-the-page
 #### VUE: ELEMENT PLUS
 
 https://element-plus.org/en-US/guide/installation.html#import-in-browser
+
+* icons
+* https://element-plus.org/en-US/component/icon.html#icon-collection
