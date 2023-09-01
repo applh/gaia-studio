@@ -12,12 +12,83 @@ This Docker container is build to provide very useful features
     * SQLite (local files)
     * SQL (remote SQL server by PHP PDO connections)
 
+
+## ARCHITECTURE
+
+Gaia Studio is built on 2 main technologies
+* Docker Containers
+* PHP
+
+### Docker Containers
+
+Docker containers are used to provide a very stable and portable environment.
+* A docker container can work identically on Mac, Windows, Linux
+* A docker container can start automatically at machine boot (daemon mode)
+A docker container can be deployes on the cloud and work as saas (Software As A Service)
+
+* Docker containers are built on top of Linux
+* Docker containers are very light
+* Docker containers are very fast to start
+* Docker containers are very fast to stop
+* Docker containers are very fast to restart
+* Docker containers are very fast to update
+* Docker containers are very fast to deploy
+* Docker containers are very fast to scale
+* Docker containers are very fast to backup
+* Docker containers are very fast to restore
+* Docker containers are very fast to migrate
+* Docker containers are very fast to monitor
+* Docker containers are very fast to debug
+* Docker containers are very fast to secure
+* Docker containers are very fast to share
+* Docker containers are very fast to ...
+
+### PHP
+
+Inside the Docker container, the programming language is PHP.
+In the context of building an AI, the choice of the programming language is important.
+An AI is a program that can learn and adapt its code to the environment.
+If you choose a language that needs a compilation step, then your AI can produce a new version of the code. 
+But it will need a step to recompile the code to run it.
+If you wan to remove this compilation step, then you need to choose a language that can be interpreted.
+PHP is an interpreted language.
+PHP is a very good choice for building an AI.
+PHP is originally a template engine, so it can generate PHP code easilly.
+And PHP can dynamically load PHP code, so it can adapt immediatly its code to the environment.
+
+#### PHP on the web
+
+Another good advantage of PHP is that it is used by +75% of the web sites.
+So the PHP code produced by Gaia can be used by +75% of the web sites.
+And WordPress is a CMS (Content Management System) that is built on top of PHP.
+So Gaia code can also ne integrated into WP as a plugin.
+WordPress is used by +40% of the web sites.
+
 ## CRON
 
 * With Alpine linux, the cron daemon is available as part of busybox.
 
 https://mixu.wtf/cron-in-docker-alpine-image/
 
+
+### Activity by every minute
+
+* Heartbeat
+* The basic period for a cron task is 1 minute.
+* A cron task can last more than 1 minute
+ 
+In the context of an AI working as a human developer,
+A human is expected to produce 1 line of code every minute.
+It seems so easy for an AI to produce 100 lines of code every minute.
+So a coding AI could be easily x100 more productive than a human developer ?!
+
+## SQL
+
+SQL databases are very popular and efficient to store data.
+Docker allows to add a SQL MariaDB container very easily.
+SQLite a also a very light SQL database that can be used as a local file.
+SQLite has a web assembly version that can be run in the browser.
+ 
 ## NGINX + PHP-FPM
 
 * AI must be able to instrospect itself

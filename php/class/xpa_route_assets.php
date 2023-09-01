@@ -64,8 +64,11 @@ class xpa_route_assets
             // Call to undefined function mime_content_type()
             // $mime = $mimes[$extension] ?? mime_content_type($file);
             $mime = $mimes[$extension] ?? "application/octet-stream";
-            header("Content-Type: $mime");
-            readfile($file);
+            xpa_response::$content_type = $mime;
+            xpa_response::$readfile = $file;
+            
+            // header("Content-Type: $mime");
+            // readfile($file);
         }
 
     }

@@ -118,7 +118,11 @@ class index
             static::$hostname = $host;
 
             $path_data_host = static::$path_data . "/site-" . static::$hostname;
+            // error_log("path_data_host: $path_data_host");
             $path_data_host = realpath($path_data_host);
+            // store the path data host
+            xpa_os::kv("path_data_host", $path_data_host);
+
         }
         else {
             // error_log("path_data not found: " . static::$path_data);
@@ -201,10 +205,24 @@ class index
             xpa_route_pages::index();
         }
         else {
-            // if path starts with /assets then serve file
-            if ("assets" == ($dirs[0] ?? "")) {
-                xpa_route_assets::index();
+            // automatic routing if $dirs[0] is not empty
+            $sub_router = $dirs[0] ?? "";
+            $sub_router = str_replace("-", "_", $sub_router);
+            $sub_router = "xpa_route_$sub_router";
+            // error_log("sub_router: $sub_router");
+            if (is_callable("$sub_router::index")) {
+                $sub_router::index();
             }
+            else {
+                // error_log("sub_router not found: $sub_router");
+            }
+
+            xpa_response::send();
+            
+            // if path starts with /assets then serve file
+            // if ("assets" == ($dirs[0] ?? "")) {
+            //     xpa_route_assets::index();
+            // }
 
         }
     }
