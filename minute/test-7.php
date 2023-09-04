@@ -52,7 +52,7 @@ class cron_job
                     "media" => "",
                     "template" => "",
                     "cat" => "cronjob",
-                    "tags" => "cronjob",
+                    "tags" => $prefix ?? "",
                     "created" => $now,
                     "updated" => $now,
                     "hash" => $hash,

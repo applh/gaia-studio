@@ -27,8 +27,12 @@ CREATE TABLE `geocms` (
   PRIMARY KEY (`id`),
   KEY `path` (`path`(768)),
   KEY `filename` (`filename`(768)),
-  KEY `created` (`created`(768) DESC)
+  KEY `created` (`created`(768) DESC),
+  KEY `tags` (`tags`(768)),
+  KEY `cat` (`cat`(768)),
+  KEY `hash` (`hash`(768))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 
 -- type text is limited to 65535 bytes
 -- type mediumtext is limited to 16777215 bytes

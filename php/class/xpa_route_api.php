@@ -60,6 +60,11 @@ class xpa_route_api
         static::$response["db_read"] = date("Y-m-d H:i:s");
     }
 
+    static function act_chrome_ext ()
+    {
+        static::$response["chrome-ext"] = date("Y-m-d H:i:s");
+    }
+
     //#class_end
 }
 
