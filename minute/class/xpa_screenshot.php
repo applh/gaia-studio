@@ -106,4 +106,9 @@ class xpa_screenshot
         passthru($cmd);
         
     }
+
+    static function chromium ()
+    {
+        
+    }
 }

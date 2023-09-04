@@ -21,8 +21,16 @@ class cron_job
             // too simple, some sites don't like it
             // $html = file_get_contents($url);
 
-            // use curl
-            $html = xpa_curl::request($url);
+            $scrap_mode ??= "curl";
+            if ($scrap_mode == "chromium") {
+                require "class/xpa_screenshot.php";
+                // use chromium
+                // xpa_screenshot::chromium($url);
+            } 
+            if ($scrap_mode == "curl") {
+                // use curl
+                $html = xpa_curl::request($url);
+            }
 
             // error_log("html: $html");
 

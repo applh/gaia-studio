@@ -62,7 +62,27 @@ class xpa_route_api
 
     static function act_chrome_ext ()
     {
-        static::$response["chrome-ext"] = date("Y-m-d H:i:s");
+        $url = $_REQUEST["url"] ?? "";
+        $title = $_REQUEST["title"] ?? "";
+        $title1 = $_REQUEST["title1"] ?? "";
+        extract(parse_url($url));
+        $host ??= "";
+
+        // insert in table geocms
+        $row = [];
+        $row["path"] = "chrome-ext";
+        $row["filename"] = basename(__FILE__);
+        $row["code"] = json_encode($_REQUEST, JSON_PRETTY_PRINT);
+        $row["url"] = $url;
+        $row["title"] = $title;
+        $row["cat"] = "chrome-ext";
+        $row["tags"] = "chrome-ext";
+        $row["created"] = date("Y-m-d H:i:s");
+
+        xpa_model::insert("geocms", $row);
+
+        static::$response["chrome-ext"] = $row;
+
     }
 
     //#class_end

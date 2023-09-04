@@ -138,11 +138,15 @@ chromium --no-sandbox --headless --disable-gpu --print-to-pdf --no-pdf-header --
 
 https://github.com/chrome-php/chrome#evaluate-script-on-the-page
 
-### Playwright Python
+### Playwright Python / NodeJS
+
+WARNING: Playwright is not working on Alpine Linux
+* Browsers build are available only on Debian and Ubuntu
 
 * Docker
 * https://playwright.dev/python/docs/docker
 * https://github.com/microsoft/playwright-python/blob/main/utils/docker/Dockerfile.jammy
+
 
 ### TUTORIALS
 
