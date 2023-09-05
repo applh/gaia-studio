@@ -43,6 +43,7 @@ class xpa_route_api
         }
 
         static::$response["request"] = $_REQUEST;
+        // static::$response["request_post"] = $_POST;
         static::$response["files"] = $_FILES;
         // $json = json_encode($response, JSON_PRETTY_PRINT);
         // echo $json;
@@ -83,6 +84,36 @@ class xpa_route_api
 
         static::$response["chrome-ext"] = $row;
 
+    }
+
+    static function act_jobs ()
+    {
+        // get the action requested
+        $action = $_REQUEST["action"] ?? "read";
+
+        if ($action == "update") {
+            // job is json encoded
+            $job = $_REQUEST["job"] ?? "";
+            // json_decode the job
+            $job = json_decode($job, true);
+            // error_log(print_r($job, true));
+            // update the job
+            $id = intval($job["id"] ?? 0);
+            // list of cols to update
+            $cols = [ "z", "content" ];
+            $updates = [];
+            foreach ($cols as $col) {
+                // values can be false or 0, ...
+                if (isset($job[$col])) {
+                    $updates[$col] = $job[$col];
+                }
+            }
+            xpa_model::update("geocms", $id, $updates);
+        }
+
+        // return the updated list
+        $rows = xpa_model::read("job", order_by: "ORDER BY z DESC, created DESC", limit: 1000);
+        static::$response["jobs"] = $rows;
     }
 
     //#class_end

@@ -19,11 +19,15 @@ class cron_job
 
     static function run_task ()
     {
-        extract(setup::load(__FILE__));
+        extract(setup::load(__FILE__) ?? []);
         error_reporting(E_ERROR);
-        
-        xpa_curl::scrap_html($options ?? []);
-        
+        if ($callback ?? false) {
+            // check if is callable
+            if (is_callable($callback)) {
+                error_log("callback: $callback");
+                $callback($options ?? []);
+            }
+        }        
     }
 }
 
