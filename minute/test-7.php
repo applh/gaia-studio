@@ -23,9 +23,31 @@ class cron_job
 
             $scrap_mode ??= "curl";
             if ($scrap_mode == "chromium") {
-                require "class/xpa_screenshot.php";
                 // use chromium
-                // xpa_screenshot::chromium($url);
+                extract(xpa_chromium::page($options));
+                $items ??= "";
+                if ($items) {
+                    $hash = md5($items);
+                    // insert a line in db gaia.geocms
+                    $row = [
+                        "path" => "scrap",
+                        "filename" => basename(__FILE__),
+                        "code" => $items,
+                        "url" => $url,
+                        "title" => "title ($now)",
+                        "content" => "content ($now)",
+                        "media" => "",
+                        "template" => "",
+                        "cat" => "wttj",
+                        "tags" => $prefix ?? "",
+                        "created" => $now,
+                        "updated" => $now,
+                        "hash" => $hash,
+                    ];
+    
+                    xpa_model::insert("geocms", $row);
+    
+                }
             } 
             if ($scrap_mode == "curl") {
                 // use curl

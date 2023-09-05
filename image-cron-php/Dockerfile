@@ -15,7 +15,7 @@ RUN apk update && \
     php82-fpm \
     php82-sqlite3 php82-pdo_sqlite php82-pdo_mysql php82-mysqli \
     php82-gd php82-curl php82-zip php82-mbstring php82-bcmath php82-opcache \
-    php82-gettext php82-intl php82-exif php82-sockets \
+    php82-xml php82-dom php82-gettext php82-intl php82-exif php82-sockets \
     php82-pecl-memcached php82-pecl-ssh2 \
     php82-phar composer \ 
     && ln -s /usr/bin/php82 /usr/local/bin/php \
