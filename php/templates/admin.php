@@ -14,70 +14,13 @@
 
 <body>
     <div id="app"></div>
+
     <template id="app-template">
-    <div class="common-layout">
+        <div class="common-layout">
             <el-container>
                 <el-aside width="200px">
-                    <h1>Welcome</h1>
-                    <el-menu :default-openeds="[]">
-                        <el-menu-item index="1-1" @click="$store.page = 'login'">login</el-menu-item>
-                        <el-menu-item index="1-2" @click="$store.page = 'jobs'">jobs</el-menu-item>
-                        <el-sub-menu index="1">
-                            <template #title>
-                                <el-icon>
-                                    <message />
-                                </el-icon>Navigator One
-                            </template>
-                            <el-menu-item-group>
-                                <template #title>Group 1</template>
-                                <el-menu-item index="1-1" @click="$store.page = 'login'">login</el-menu-item>
-                                <el-menu-item index="1-2" @click="$store.page = 'jobs'">jobs</el-menu-item>
-                            </el-menu-item-group>
-                            <el-menu-item-group title="Group 2">
-                                <el-menu-item index="1-3">Option 3</el-menu-item>
-                            </el-menu-item-group>
-                            <el-sub-menu index="1-4">
-                                <template #title>Option4</template>
-                                <el-menu-item index="1-4-1">Option 4-1</el-menu-item>
-                            </el-sub-menu>
-                        </el-sub-menu>
-                        <el-sub-menu index="2">
-                            <template #title>
-                                <el-icon><icon-menu /></el-icon>Navigator Two
-                            </template>
-                            <el-menu-item-group>
-                                <template #title>Group 1</template>
-                                <el-menu-item index="2-1">Option 1</el-menu-item>
-                                <el-menu-item index="2-2">Option 2</el-menu-item>
-                            </el-menu-item-group>
-                            <el-menu-item-group title="Group 2">
-                                <el-menu-item index="2-3">Option 3</el-menu-item>
-                            </el-menu-item-group>
-                            <el-sub-menu index="2-4">
-                                <template #title>Option 4</template>
-                                <el-menu-item index="2-4-1">Option 4-1</el-menu-item>
-                            </el-sub-menu>
-                        </el-sub-menu>
-                        <el-sub-menu index="3">
-                            <template #title>
-                                <el-icon>
-                                    <setting />
-                                </el-icon>Navigator Three
-                            </template>
-                            <el-menu-item-group>
-                                <template #title>Group 1</template>
-                                <el-menu-item index="3-1">Option 1</el-menu-item>
-                                <el-menu-item index="3-2">Option 2</el-menu-item>
-                            </el-menu-item-group>
-                            <el-menu-item-group title="Group 2">
-                                <el-menu-item index="3-3">Option 3</el-menu-item>
-                            </el-menu-item-group>
-                            <el-sub-menu index="3-4">
-                                <template #title>Option 4</template>
-                                <el-menu-item index="3-4-1">Option 4-1</el-menu-item>
-                            </el-sub-menu>
-                        </el-sub-menu>
-                    </el-menu>
+                    <xp-admin-menu></xp-admin-menu>
+
                 </el-aside>
                 <el-container>
                     <el-header>
@@ -87,7 +30,9 @@
                     <el-main>
                         <hr>
                         <xp-admin-login v-if="$store.page == 'login'"></xp-admin-login>
+                        <xp-admin-crud v-if="$store.page == 'crud'"></xp-admin-crud>
                         <xp-admin-jobs v-if="$store.page == 'jobs'"></xp-admin-jobs>
+                        <xp-admin-jobs-v2 v-if="$store.page == 'jobs-v2'"></xp-admin-jobs-v2>
                         <hr>
                     </el-main>
                     <el-footer>
@@ -103,6 +48,73 @@
             <el-drawer v-model="drawer" title="I am the title" :with-header="false" direction="btt">
                 <span>Hi there!</span>
             </el-drawer>
+        </div>
+    </template>
+
+    <template id="template-xp-admin-jobs">
+        <div>
+            <h1>xp-admin-jobs</h1>
+            <p>Jobs (total: {{ $store.jobs.length }}) (visible: {{ nb_show() }})</p>
+            <label>
+                <span>level min</span>
+                <input name="z" type="number" v-model="level_min" />
+                <input name="z" type="range" v-model="level_min" min="-10" max="10" />
+            </label>
+
+            <ol class="jobs">
+                <template v-for="job in $store.jobs">
+                    <li v-if="select(job)" class="job">
+                        <h3><a :href="job.url" target="_blank">{{ job.title }}</a></h3>
+                        <div class="bg-200">{{ company(job) }} | {{ job.created.slice(5, 10) }}</div>
+                        <input name="z" type="number" v-model="job.z" />
+                        <button type="submit" @click.prevent="act_save(job)">save (id: {{ job.id }})</button>
+                        <textarea name="content" v-model="job.content" rows="5"></textarea>
+                    </li>
+                </template>
+            </ol>
+        </div>
+    </template>
+
+
+    <template id="template-xp-admin-jobs-v2">
+        <div>
+            <h1>xp-admin-jobs-v2</h1>
+            <hr />
+            <el-tree :data="tree_data" show-checkbox></el-tree>
+            <hr />
+            <p>Jobs (total: {{ $store.jobs.length }})</p>
+            <span>{{ table_height }}</span>
+            <input type="range" v-model="table_height" min="0" max="2000" />
+            <el-table :data="table_data"
+                :default-sort="{ prop: 'z', order: 'descending' }"
+                style="width: 100%" :height="table_height"
+            >
+                <el-table-column prop="created" label="created" :formatter="filter_date" sortable width="160"></el-table-column>
+                <el-table-column prop="id" label="id" width="80" sortable></el-table-column>
+                <el-table-column prop="z" label="z" width="80" sortable></el-table-column>
+                <el-table-column prop="title" label="title" width="640" sortable>
+                    <template #default="{ row }">
+                        <a :href="row.url" target="_blank"><h3>{{ row.title }}</h3></a>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="content" label="content" width="640" sortable>
+                    <template #default="{ row }">
+                        <a :href="row.url" target="_blank">{{ row.url.slice(47) }}</a><br/>
+                        <form @submit.prevent="act_save($event, row)">
+                            <el-text v-if="row.z != null" class="mx-1" type="primary">( z={{ row.z }} )</el-text>
+                            <el-text v-else class="mx-1" type="warning">( z={{ row.z }} )</el-text>
+                            <input name="z" type="number" :value="row.z ?? 0" />
+                            <button type="submit">save (id: {{ row.id }})</button>
+                            <textarea name="content" v-model="row.content" rows="5"></textarea>
+                        </form>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="url" label="url" width="640" sortable>
+                    <template #default="{ row }">
+                        <a :href="row.url" target="_blank">{{ row.url.slice(47) }}</a>
+                    </template>
+                </el-table-column>
+            </el-table>
         </div>
     </template>
 
@@ -124,39 +136,85 @@
         </div>
     </template>
 
-    <template id="template-xp-admin-jobs">
-        <div>
-            <h1>xp-admin-jobs</h1>
-            <p>Jobs (total: {{ $store.jobs.length }}) (visible: {{ nb_show() }})</p>
-            <label>
-                <span>level min</span>
-                <input name="z" type="number" v-model="level_min" />
-                <input name="z" type="range" v-model="level_min" min="-10" max="10"/>
-            </label>
-
-            <ol class="jobs">
-                <template v-for="job in $store.jobs">
-                    <li v-if="select(job)" class="job">
-                        <a :href="job.url">{{ job.title }} ({{ company(job) }} | {{ job.id }})</a>
-                        <div>{{ job.created.slice(5, 10) }}</div>
-                        <input name="z" type="range" v-model="job.z" min="-10" max="10" />
-                        <input name="z" type="text" v-model="job.z" />
-                        <button type="submit" @click.prevent="act_save(job)">save</button>
-                        <textarea name="content" v-model="job.content" rows="5"></textarea>
-                    </li>
-                </template>
-            </ol>
-        </div>
+    <template id="template-xp-admin-crud">
+        <h1>template-xp-admin-crud</h1>
     </template>
 
+    <template id="template-xp-admin-menu">
+        <h1><a href="">Welcome</a></h1>
+        <el-menu :default-openeds="[]">
+            <el-menu-item @click="$store.page = 'login'">login</el-menu-item>
+            <el-menu-item @click="$store.page = 'crud'">crud</el-menu-item>
+            <el-menu-item @click="$store.page = 'jobs-v2'">jobs v2</el-menu-item>
+            <el-menu-item @click="$store.page = 'jobs'">jobs</el-menu-item>
+            <el-sub-menu index="1">
+                <template #title>
+                    <el-icon>
+                        <message />
+                    </el-icon>Navigator One
+                </template>
+                <el-menu-item-group>
+                    <template #title>Group 1</template>
+                    <el-menu-item index="1-1" @click="$store.page = 'login'">login</el-menu-item>
+                    <el-menu-item index="1-2" @click="$store.page = 'jobs'">jobs</el-menu-item>
+                </el-menu-item-group>
+                <el-menu-item-group title="Group 2">
+                    <el-menu-item index="1-3">Option 3</el-menu-item>
+                </el-menu-item-group>
+                <el-sub-menu index="1-4">
+                    <template #title>Option4</template>
+                    <el-menu-item index="1-4-1">Option 4-1</el-menu-item>
+                </el-sub-menu>
+            </el-sub-menu>
+            <el-sub-menu index="2">
+                <template #title>
+                    <el-icon><icon-menu /></el-icon>Navigator Two
+                </template>
+                <el-menu-item-group>
+                    <template #title>Group 1</template>
+                    <el-menu-item index="2-1">Option 1</el-menu-item>
+                    <el-menu-item index="2-2">Option 2</el-menu-item>
+                </el-menu-item-group>
+                <el-menu-item-group title="Group 2">
+                    <el-menu-item index="2-3">Option 3</el-menu-item>
+                </el-menu-item-group>
+                <el-sub-menu index="2-4">
+                    <template #title>Option 4</template>
+                    <el-menu-item index="2-4-1">Option 4-1</el-menu-item>
+                </el-sub-menu>
+            </el-sub-menu>
+            <el-sub-menu index="3">
+                <template #title>
+                    <el-icon>
+                        <setting />
+                    </el-icon>Navigator Three
+                </template>
+                <el-menu-item-group>
+                    <template #title>Group 1</template>
+                    <el-menu-item index="3-1">Option 1</el-menu-item>
+                    <el-menu-item index="3-2">Option 2</el-menu-item>
+                </el-menu-item-group>
+                <el-menu-item-group title="Group 2">
+                    <el-menu-item index="3-3">Option 3</el-menu-item>
+                </el-menu-item-group>
+                <el-sub-menu index="3-4">
+                    <template #title>Option 4</template>
+                    <el-menu-item index="3-4-1">Option 4-1</el-menu-item>
+                </el-sub-menu>
+            </el-sub-menu>
+        </el-menu> 
+    </template>
     <!-- import map -->
     <script type="importmap">
         {
             "imports": {
                 "vue": "/assets/vue-esm-prod-334.js",
                 "element-plus": "/assets/element-plus/index-min.mjs",
+                "xp-admin-menu": "/assets/xp-admin-menu.js",
+                "xp-admin-crud": "/assets/xp-admin-crud.js",
                 "xp-admin-login": "/assets/xp-admin-login.js",
                 "xp-admin-jobs": "/assets/xp-admin-jobs.js",
+                "xp-admin-jobs-v2": "/assets/xp-admin-jobs-v2.js",
                 "vp-admin": "/assets/vp-admin.js",
                 "vp-app": "/assets/vp-app.js",
                 "vp-common": "/assets/vp-common.js"

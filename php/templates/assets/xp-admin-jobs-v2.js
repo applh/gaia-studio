@@ -1,14 +1,32 @@
 "use strict";
 
-console.log('loading... xp-admin-jobs.js');
+console.log('loading... xp-admin-jobs-v2.js');
 
 let data = {
-    index_company : 3,
+    index_company: 3,
     level_min: -1,
+    tree_data: [
+        {
+            id: 1,
+            label: 'Level one 1',
+            children: [
+                {
+                    id: 4,
+                    label: 'Level two 1-1',
+                },
+            ]
+        },
+        {
+            id: 2,
+            label: 'Level one 2',
+        },
+    ],
+    table_data: [],
+    table_height: 600,
 };
 
 let mounted = async function () {
-    console.log('mounted xp-admin-jobs.js');
+    console.log('mounted xp-admin-jobs-v2.js');
     // fetch jobs from /api/jobs
     let response = await fetch('/api/jobs');
     let response_json = await response.json();
@@ -16,6 +34,8 @@ let mounted = async function () {
     this.$store.jobs = response_json.jobs ?? [];
     // update level_min
     this.level_min = 0;
+
+    this.table_data = this.$store.jobs;
 }
 
 let computed = {
@@ -29,7 +49,19 @@ let watch = {
 };
 
 let methods = {
-    company (job) {
+    filter_date (row, column) {
+        return row.created.slice(5, 16);
+    },
+    filter_url (row, column) {
+        // build a link from url
+        let url = row.url;
+        let res = '';
+        if (url ?? false) {
+            res = '<a href="' + url + '" target="_blank">' + url + '</a>';
+        }
+        return res;  
+    },
+    company(job) {
         let res = '';
         if (job.url ?? false) {
             let urlObj = new URL(job.url);
@@ -47,7 +79,7 @@ let methods = {
         }
         return false;
     },
-    nb_show () {
+    nb_show() {
         // FIXME: missing inital sync after fetch
 
         let total = this.$store.jobs.length;
@@ -55,9 +87,17 @@ let methods = {
         let nb = document.querySelectorAll('ol.jobs li.job').length;
         console.log('nb_show', nb, total);
         return nb;
-    }, 
-    async act_save (job) {
-        console.log('act_save', job);
+    },
+    async act_save($event, job) {
+        console.log('act_save', $event, job);
+        let target = $event.target;
+        let ui_fd = new FormData(target);
+        // get z from input
+        let z = ui_fd.get('z');
+        console.log('user z', z);
+        // update job
+        job.z = z;
+
         let json = JSON.stringify(job);
         let form_data = new FormData();
         form_data.append('action', 'update');
@@ -76,7 +116,7 @@ let methods = {
     },
 };
 export default {
-    template: '#template-xp-admin-jobs',
+    template: '#template-xp-admin-jobs-v2',
     // WARNING: copy data for each instance
     data: () => Object.assign({}, data),
     mounted,

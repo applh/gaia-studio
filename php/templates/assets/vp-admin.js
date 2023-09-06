@@ -36,8 +36,11 @@ export default {
         // register async components
         // NOTE: don't forget to add the name in the JSON import
         let compos = [ 
+            'xp-admin-menu',
             'xp-admin-login',
+            'xp-admin-crud',
             'xp-admin-jobs',
+            'xp-admin-jobs-v2',
         ];
         
         compos.forEach(element => {
