@@ -31,7 +31,6 @@
                         <hr>
                         <xp-admin-login v-if="$store.page == 'login'"></xp-admin-login>
                         <xp-admin-crud v-if="$store.page == 'crud'"></xp-admin-crud>
-                        <xp-admin-jobs v-if="$store.page == 'jobs'"></xp-admin-jobs>
                         <xp-admin-jobs-v2 v-if="$store.page == 'jobs-v2'"></xp-admin-jobs-v2>
                         <hr>
                     </el-main>
@@ -51,36 +50,11 @@
         </div>
     </template>
 
-    <template id="template-xp-admin-jobs">
-        <div>
-            <h1>xp-admin-jobs</h1>
-            <p>Jobs (total: {{ $store.jobs.length }}) (visible: {{ nb_show() }})</p>
-            <label>
-                <span>level min</span>
-                <input name="z" type="number" v-model="level_min" />
-                <input name="z" type="range" v-model="level_min" min="-10" max="10" />
-            </label>
-
-            <ol class="jobs">
-                <template v-for="job in $store.jobs">
-                    <li v-if="select(job)" class="job">
-                        <h3><a :href="job.url" target="_blank">{{ job.title }}</a></h3>
-                        <div class="bg-200">{{ company(job) }} | {{ job.created.slice(5, 10) }}</div>
-                        <input name="z" type="number" v-model="job.z" />
-                        <button type="submit" @click.prevent="act_save(job)">save (id: {{ job.id }})</button>
-                        <textarea name="content" v-model="job.content" rows="5"></textarea>
-                    </li>
-                </template>
-            </ol>
-        </div>
-    </template>
-
-
     <template id="template-xp-admin-jobs-v2">
         <div>
             <h1>xp-admin-jobs-v2</h1>
             <hr />
-            <el-tree :data="tree_data" show-checkbox></el-tree>
+            <el-tree :data="tree_data" show-checkbox draggable></el-tree>
             <hr />
             <p>Jobs (total: {{ $store.jobs.length }})</p>
             <span>{{ table_height }}</span>
@@ -146,7 +120,6 @@
             <el-menu-item @click="$store.page = 'login'">login</el-menu-item>
             <el-menu-item @click="$store.page = 'crud'">crud</el-menu-item>
             <el-menu-item @click="$store.page = 'jobs-v2'">jobs v2</el-menu-item>
-            <el-menu-item @click="$store.page = 'jobs'">jobs</el-menu-item>
             <el-sub-menu index="1">
                 <template #title>
                     <el-icon>
@@ -156,7 +129,7 @@
                 <el-menu-item-group>
                     <template #title>Group 1</template>
                     <el-menu-item index="1-1" @click="$store.page = 'login'">login</el-menu-item>
-                    <el-menu-item index="1-2" @click="$store.page = 'jobs'">jobs</el-menu-item>
+                    <el-menu-item index="1-2" @click="$store.page = 'jobs-v2'">jobs v2</el-menu-item>
                 </el-menu-item-group>
                 <el-menu-item-group title="Group 2">
                     <el-menu-item index="1-3">Option 3</el-menu-item>
@@ -213,7 +186,6 @@
                 "xp-admin-menu": "/assets/xp-admin-menu.js",
                 "xp-admin-crud": "/assets/xp-admin-crud.js",
                 "xp-admin-login": "/assets/xp-admin-login.js",
-                "xp-admin-jobs": "/assets/xp-admin-jobs.js",
                 "xp-admin-jobs-v2": "/assets/xp-admin-jobs-v2.js",
                 "vp-admin": "/assets/vp-admin.js",
                 "vp-app": "/assets/vp-app.js",

@@ -167,3 +167,23 @@ https://element-plus.org/en-US/guide/installation.html#import-in-browser
 
 * icons
 * https://element-plus.org/en-US/component/icon.html#icon-collection
+
+
+## WORDPRESS PLUGIN
+
+* GAIA Studio can also be used as a WordPress plugin
+  * The php folder can be used as a WordPress plugin
+
+https://developer.wordpress.org/block-editor/reference-guides/packages/packages-env/
+
+```
+* usage:
+* open terminal in php folder
+
+wp-env start
+
+wp-env stop
+
+wp-env destroy
+
+```

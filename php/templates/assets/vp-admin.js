@@ -39,7 +39,6 @@ export default {
             'xp-admin-menu',
             'xp-admin-login',
             'xp-admin-crud',
-            'xp-admin-jobs',
             'xp-admin-jobs-v2',
         ];
         

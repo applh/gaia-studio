@@ -22,7 +22,8 @@ let data = {
         },
     ],
     table_data: [],
-    table_height: 600,
+    // get 0.8 of the window height
+    table_height: 100 * parseInt(window.innerHeight * 0.008),
 };
 
 let mounted = async function () {
