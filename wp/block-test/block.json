@@ -1,0 +1,28 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "xperia/block-d",
+    "title": "Xperia Block D in json",
+    "category": "text",
+    "icon": "smiley",
+    "attributes": {
+        "hello_text": {
+            "type": "string",
+            "default": "Hello World"
+        },
+        "my_test": {
+            "type": "string",
+            "default": "My Test"
+        },
+        "my_meta": {
+            "type": "string",
+            "default": "My Meta"
+        }
+    },
+    "editorScript": "file:./block.js",
+    "supports": {
+        "customClassName": true,
+        "anchor": true
+    }
+
+}
