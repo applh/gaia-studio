@@ -23,12 +23,17 @@ class xpa_response
     {
         // set header
         header("Content-Type: " . static::$content_type);
-        // FIXME: CORS 
+        // FIXME: CORS SHOULD ALLOW EVERY ORIGIN
+        // Access-Control-Allow-Origin
         header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Headers: *");
+        header("Access-Control-Allow-Methods: *");
+        header("Access-Control-Allow-Credentials: true");
+
         // header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
         // header("Access-Control-Allow-Headers:  Authorization, X-Requested-With, Accept, Origin, Accept-Language, Last-Modified, Cache-Control, Pragma, If-Modified-Since, Access-Control-Allow-Origin");
         // header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Origin");
-        header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Origin, Access-Control-Allow-Credentials");
+        // header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Origin, Access-Control-Allow-Credentials");
 
         if (static::$readfile) {
             // send file

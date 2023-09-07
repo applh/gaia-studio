@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Plugin Name: XP Studio
  */
@@ -14,7 +13,7 @@ class xp_studio
             // get the block type registry
             $block_types = WP_Block_Type_Registry::get_instance();
             // get the block type
-            $block_type = $block_types->get_registered("xperia/block-d");
+            $block_type = $block_types->get_registered("xps/test");
             $res = $block_type->render_callback ?? "---";
             // check if is_callable
             if (is_callable($res)) {
@@ -24,7 +23,42 @@ class xp_studio
             return $res;
         });
 
-        add_action("init", "xp_studio::register_blocks");
+        add_action("init", "xp_studio::init");
+
+        // add a hook on template_redirect is404
+        add_action('template_redirect', 'xp_studio::template_redirect');
+
+
+    }
+
+    static function init ()
+    {
+        // https://github.com/WordPress/gutenberg-examples/blob/trunk/blocks-jsx/meta-block/index.php
+        register_post_meta(
+            'post',
+            'myguten_meta_block_field',
+            array(
+                'show_in_rest' => true,
+                'single'       => true,
+                'type'         => 'string',
+            )
+        );
+
+        xp_studio::register_blocks();
+    }
+
+    static function template_redirect()
+    {
+        // check if is 404
+        if (is_404()) {
+            $data = [
+                "now" => date("Y-m-d H:i:s"),
+            ];
+            status_header(200);
+            header("Content-Type: application/json");
+            echo json_encode($data, JSON_PRETTY_PRINT);
+            die();
+        }
     }
 
     // register blok shortcode
@@ -32,7 +66,7 @@ class xp_studio
     {
 
         // register_block_type_from_metadata(
-        //     __DIR__ . '/shortcode',
+        //     __DIR__ . '/wp/shortcode',
         //     array(
         //         'render_callback' => 'xp_studio::render_block_core_shortcode',
         //     )
@@ -63,14 +97,52 @@ class xp_studio
             'editor_script' => 'xperia-block-d', // The script name we gave in the wp_register_script() call.
             'render_callback' => 'xp_studio::render',
             // 'supports' => array('color' => true, 'align' => true),
+            'attributes' => [
+                "hello_text" => [
+                    "type" => "string",
+                    "default" => "Hello World",
+                    // will need a js save function
+                    // will be saved as HTML content
+                    // "source" => "text",
+                    // "selector" => "p",
+                ],
+                // no need of js save function
+                // will be saved as json property
+                "my_test" => [
+                    "type" => "string",
+                    "default" => "my_test",
+                ],
+                // will be saved as json property
+                "my_meta" => [
+                    "type" => "string",
+                    "default" => "my_meta",
+                ],
+            ],
+            // https://developer.wordpress.org/block-editor/reference-guides/block-api/block-supports/
+            "supports" => [
+                "className" => true,    // cool
+                "customClassName" => true, // cool
+                "html" => true,
+                "anchor" => true,
+                // "align" => true, // ?? not working 
+            ],
+    
         ));
         
-        
+        // FIXME: WP doesn't find the block.json file ?!
+        // $block_test = __DIR__ . '/wp/block-test';
+        // $block_test = realpath($block_test);
+        // $block_test = plugin_dir_path(__FILE__) . 'wp/block-test';
+        // header("x-debug-block-test: $block_test");
+
+        // register_block_type_from_metadata($block_test);
     }
 
     static function render ()
     {
-        return "hello world from render... ". date("Y-m-d H:i:s");
+        $search = glob(__DIR__ . '/wp/block-test/*.json');
+        $res = print_r($search, true);
+        return $res . " hello world from render... ". date("Y-m-d H:i:s");
         // die();
     }
 

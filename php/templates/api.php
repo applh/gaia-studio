@@ -29,5 +29,8 @@ $response['users'] = $users;
 
 
 // header
-header('Content-Type: application/json');
-echo json_encode($response);
+// header('Content-Type: application/json');
+// echo json_encode($response);
+
+xpa_response::$content_type = "application/json";
+xpa_response::$content = json_encode($response);

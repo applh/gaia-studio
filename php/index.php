@@ -217,7 +217,6 @@ class index
                 // error_log("sub_router not found: $sub_router");
             }
 
-            xpa_response::send();
             
             // if path starts with /assets then serve file
             // if ("assets" == ($dirs[0] ?? "")) {
@@ -225,6 +224,8 @@ class index
             // }
 
         }
+        xpa_response::send();
+
     }
 
 

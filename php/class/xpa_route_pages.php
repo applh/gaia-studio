@@ -23,11 +23,16 @@ class xpa_route_pages
             "xpa_route_pages::show_page",
             "xpa_route_pages::show_template",
         ];
+        ob_start();
         foreach ($searchs as $search) {
             if (!$found && is_callable($search)) {
                 $filename = xpa_os::kv("filename") ?? "";
                 $found = $search($filename);
             }
+        }
+        $content = ob_get_clean();
+        if (empty(xpa_response::$content)) {
+            xpa_response::$content = $content;
         }
     }
 
