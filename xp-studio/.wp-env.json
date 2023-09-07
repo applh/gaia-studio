@@ -1,0 +1,13 @@
+{
+    "core": null,
+    "plugins": [ "." ],
+    "mappings": {
+        "wp-content/plugins/xp-studio/php": "../php"
+    },
+    "port": 4567,
+    "env": {
+        "tests": {
+            "port": 4666
+        }
+    } 
+}
