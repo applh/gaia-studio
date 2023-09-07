@@ -5,6 +5,9 @@
     "title": "XPS IS THE BEST",
     "category": "text",
     "icon": "smiley",
+    "editorScript": "file:./block.js",
+    "editorStyle": "file:./block.css",
+    "style": "file:./style.css",
     "attributes": {
         "hello_text": {
             "type": "string",
@@ -19,7 +22,6 @@
             "default": "My Meta"
         }
     },
-    "editorScript": "file:./block.js",
     "supports": {
         "customClassName": true,
         "anchor": true

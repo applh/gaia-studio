@@ -50,15 +50,20 @@ console.log('HELLO from my test-2');
         // WARNING: edit will be called each time a change occurs to the block
         let ajax = el('div', { className: 'ajax' }, props.attributes.my_meta);
 
+        // will let WP add selection and toolbar on block in editor
+        let bps = window.wp.blockEditor.useBlockProps({
+            className: 'my_test ' + (props.attributes.className ?? ''),
+        });
+
         // build html for editor
         return el(
             'div',  // tag
-            {},     // tag attributes
+            bps, // tag attributes
             // children list
             content,
             input,
             textarea,
-            ajax
+            ajax,
         );
     }
 
