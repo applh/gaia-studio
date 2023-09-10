@@ -29,6 +29,18 @@ class xpw_admin
             'xp-studio',
             'xpw_admin::admin_page'
         );
+        // unregister form.css if page is xp-studio
+        add_action('admin_enqueue_scripts', 'xpw_admin::admin_enqueue_scripts');
+    }
+
+    static function admin_enqueue_scripts ()
+    {
+        // check if is xp-studio
+        if (isset($_GET['page']) && $_GET['page'] == 'xp-studio') {
+            // breaks too many things
+            // unregister form.css
+            // wp_deregister_style('forms');
+        }
     }
 
     static function admin_page ()

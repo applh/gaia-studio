@@ -3,7 +3,8 @@
     "core": null,
     "plugins": [ "." ],
     "mappings": {
-        "wp-content/plugins/xp-studio/php": "../php"
+        "wp-content/plugins/xp-studio/php": "../php",
+        "wp-content/plugins/xp-studio/blocks/gutenpride": "../wp-blocks/gutenpride/build"
     },
     "port": 4567,
     "env": {

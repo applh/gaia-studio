@@ -108,6 +108,18 @@ class xp_studio
         include __DIR__ . '/wp/block-test-2/register.php';        
         // include __DIR__ . '/wp/block-test/register.php';
 
+        $path_blocks = __DIR__ . "/blocks/*/block.json";
+        $blocks = glob($path_blocks);
+        // loop on blocks
+        foreach ($blocks as $block) {
+            // get the block name
+            $block_name = basename(dirname($block));
+            // register the block
+            register_block_type_from_metadata(
+                dirname($block),
+            );
+        }
+
     }
 
 }
