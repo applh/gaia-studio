@@ -5,8 +5,36 @@
 
 class xp_studio
 {
+    static $path_studio = __DIR__;
+
     static function start()
     {
+        // add autoloader
+        spl_autoload_register("xp_studio::autoload");
+
+        add_action("init", "xp_studio::init");
+
+        if (is_admin()) {
+            xpw_admin::setup_admin();
+        }
+    }
+
+    static function autoload ($classname) {
+        // check if file exists in wp/class/$classname.php
+        $path = __DIR__ . "/wp/class/$classname.php";
+        if (file_exists($path)) {
+            include $path;
+        }
+    }
+
+    static function init ()
+    {
+        // add a hook on template_redirect is404
+        add_action('template_redirect', 'xpw_hook::template_redirect');
+
+        // add a rest api entry point 
+        add_action('rest_api_init', 'xpw_hook::rest_api_init');
+
         // add a shortcode test to display php date and hour
         add_shortcode('test', function ($attrs, $content = null) {
             $attrs = shortcode_atts([
@@ -34,30 +62,7 @@ class xp_studio
 
             return $res;
         });
-
-        // add autoloader
-        spl_autoload_register("xp_studio::autoload");
         
-        add_action("init", "xp_studio::init");
-
-        if (is_admin()) {
-            xpw_admin::setup_admin();
-        }
-    }
-
-    static function autoload ($classname) {
-        // check if file exists in wp/class/$classname.php
-        $path = __DIR__ . "/wp/class/$classname.php";
-        if (file_exists($path)) {
-            include $path;
-        }
-    }
-
-    static function init ()
-    {
-        // add a hook on template_redirect is404
-        add_action('template_redirect', 'xp_studio::template_redirect');
-
         // https://github.com/WordPress/gutenberg-examples/blob/trunk/blocks-jsx/meta-block/index.php
         // register_post_meta(
         //     'post',
@@ -72,27 +77,6 @@ class xp_studio
         xp_studio::register_blocks();
     }
 
-
-    static function template_redirect()
-    {
-        // check if is 404
-        if (is_404()) {
-            // MAKE A SIMPLE BRIDGE TO GAIA
-            // load gaia unique entry point
-            // cool: gaia will handle all requests with a single entry point
-            ob_start();
-            include __DIR__ . "/php/index.php";
-            $response = ob_get_clean();
-            // FIXME: should test if is 404 again
-            // check status
-            if (xpa_response::$status == 200) {
-                status_header(200);
-                // content-type is set by gaia
-                echo $response;
-                die();
-            }
-        }
-    }
 
     static function path_data ()
     {
