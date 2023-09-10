@@ -35,16 +35,29 @@ class xp_studio
             return $res;
         });
 
+        // add autoloader
+        spl_autoload_register("xp_studio::autoload");
+        
         add_action("init", "xp_studio::init");
 
-        // add a hook on template_redirect is404
-        add_action('template_redirect', 'xp_studio::template_redirect');
+        if (is_admin()) {
+            xpw_admin::setup_admin();
+        }
+    }
 
-
+    static function autoload ($classname) {
+        // check if file exists in wp/class/$classname.php
+        $path = __DIR__ . "/wp/class/$classname.php";
+        if (file_exists($path)) {
+            include $path;
+        }
     }
 
     static function init ()
     {
+        // add a hook on template_redirect is404
+        add_action('template_redirect', 'xp_studio::template_redirect');
+
         // https://github.com/WordPress/gutenberg-examples/blob/trunk/blocks-jsx/meta-block/index.php
         // register_post_meta(
         //     'post',
@@ -58,6 +71,7 @@ class xp_studio
 
         xp_studio::register_blocks();
     }
+
 
     static function template_redirect()
     {
