@@ -48,7 +48,7 @@ var external_wp_blockEditor_namespaceObject = window["wp"]["blockEditor"];
  * @return {WPElement} Element to render.
  */
 function Edit() {
-  return (0,external_wp_element_namespaceObject.createElement)("p", {
+  return (0,external_wp_element_namespaceObject.createElement)("div", {
     ...(0,external_wp_blockEditor_namespaceObject.useBlockProps)()
   }, (0,external_wp_i18n_namespaceObject.__)('Gutenpride – hello from the editor!', 'gutenpride'), (0,external_wp_element_namespaceObject.createElement)("div", null, "MY CUSTOM CODE"));
 }
@@ -72,7 +72,7 @@ function Edit() {
  * @return {WPElement} Element to render.
  */
 function save() {
-  return (0,external_wp_element_namespaceObject.createElement)("p", {
+  return (0,external_wp_element_namespaceObject.createElement)("div", {
     ...external_wp_blockEditor_namespaceObject.useBlockProps.save()
   }, 'Gutenpride – hello from the saved content!');
 }

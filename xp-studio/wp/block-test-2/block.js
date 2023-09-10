@@ -89,12 +89,32 @@ console.log('HELLO from my test-2');
             }
         });
 
+        // useSelect 
+        // https://developer.wordpress.org/block-editor/reference-guides/packages/packages-data/#useselect
+        let { custom } = wp.data.useSelect(
+            async (select) => {
+                // WILL IMPORT ONLY ONCE (ESM)
+                let app_vue = await import ("./app-vue.js");
+
+                return {
+                    custom: {}
+                }
+            },
+            []
+        );
+
+        // let vue_app = el('div', { id: 'vue-app' }, 'vue app');
+
+        let xve = el('div', {className: 'to1'}, 'HELLO TO1');
+        let xve2 = el('xps-ve', {});
         // build html for editor
         return el(
             'div',  // tag
             bps, // tag attributes
             // children list
             rt,
+            // vue_app,
+            xve2,
             ib,
             // tc,
             // tac,

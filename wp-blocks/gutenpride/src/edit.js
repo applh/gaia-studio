@@ -31,9 +31,9 @@ import './editor.scss';
  */
 export default function Edit() {
 	return (
-		<p { ...useBlockProps() }>
+		<div { ...useBlockProps() }>
 			{ __( 'Gutenpride – hello from the editor!', 'gutenpride' ) }
 			<div>MY CUSTOM CODE</div>
-		</p>
+		</div>
 	);
 }
