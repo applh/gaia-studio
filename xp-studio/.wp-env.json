@@ -1,4 +1,5 @@
 {
+    "phpVersion": null,
     "core": null,
     "plugins": [ "." ],
     "mappings": {

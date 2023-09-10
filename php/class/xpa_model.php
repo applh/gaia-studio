@@ -82,9 +82,11 @@ class xpa_model
             xpa_model::$requests[] = $sql;
             // connect
             $pdo = xpa_model::connect();
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute($data);
-            xpa_response::$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            if ($pdo != null) {
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute($data);
+                xpa_response::$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);    
+            }
         } catch (PDOException $e) {
             error_log("xpa_model::send_sql() PDOException: " . $e->getMessage());
         }

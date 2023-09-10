@@ -57,22 +57,17 @@
             <el-tree :data="tree_data" show-checkbox draggable></el-tree>
             <hr />
             <p>Jobs (total: {{ $store.jobs.length }})</p>
-            <span>{{ table_height }}</span>
+            <span>table height: {{ table_height }}</span>
             <input type="range" v-model="table_height" min="0" max="2000" />
             <el-table :data="table_data"
                 :default-sort="{ prop: 'z', order: 'descending' }"
                 style="width: 100%" :height="table_height"
             >
-                <el-table-column prop="created" label="created" :formatter="filter_date" sortable width="160"></el-table-column>
-                <el-table-column prop="id" label="id" width="80" sortable></el-table-column>
+                <el-table-column prop="created" label="created" :formatter="filter_date" sortable width="120"></el-table-column>
                 <el-table-column prop="z" label="z" width="80" sortable></el-table-column>
-                <el-table-column prop="title" label="title" width="640" sortable>
-                    <template #default="{ row }">
-                        <a :href="row.url" target="_blank"><h3>{{ row.title }}</h3></a>
-                    </template>
-                </el-table-column>
                 <el-table-column prop="content" label="content" width="640" sortable>
                     <template #default="{ row }">
+                        <a :href="row.url" target="_blank"><h3>{{ row.title }}</h3></a>
                         <a :href="row.url" target="_blank">{{ row.url.slice(47) }}</a><br/>
                         <form @submit.prevent="act_save($event, row)">
                             <el-text v-if="row.z != null" class="mx-1" type="primary">( z={{ row.z }} )</el-text>
@@ -81,6 +76,12 @@
                             <button type="submit">save (id: {{ row.id }})</button>
                             <textarea name="content" v-model="row.content" rows="5"></textarea>
                         </form>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="id" label="id" width="80" sortable></el-table-column>
+                <el-table-column prop="title" label="title" width="640" sortable>
+                    <template #default="{ row }">
+                        <a :href="row.url" target="_blank"><h3>{{ row.title }}</h3></a>
                     </template>
                 </el-table-column>
                 <el-table-column prop="url" label="url" width="640" sortable>

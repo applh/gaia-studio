@@ -13,7 +13,10 @@ h1 {
     padding:1rem;
     text-align: left;
 }
-
+h3 {
+    margin: 0;
+    padding: 0.5rem;
+}
 textarea {
     width: 100%;
     padding: 0.5rem;

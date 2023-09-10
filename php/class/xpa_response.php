@@ -13,7 +13,7 @@
 class xpa_response
 {
     //#class_start
-
+    static $status = 200;
     static $content_type = "text/html";
     static $content = "";
     static $readfile = "";

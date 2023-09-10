@@ -99,10 +99,21 @@ class index
     {
         // autoloader        
         spl_autoload_register("index::autoload");
-        // composer vendor
-        $path_vendor = __DIR__ . "/vendor/autoload.php";
-        if (file_exists($path_vendor)) {
-            include $path_vendor;
+
+        // check if loaded from wp plugin xp_studio
+        // perf: don't try to load if not defined
+        if (class_exists("xp_studio", false)) {
+            // set the path data
+            static::$path_data = xp_studio::path_data();
+        }
+        else {
+            // FIXME: composer wants php8.1+
+            // composer vendor
+            $path_vendor = __DIR__ . "/vendor/autoload.php";
+            if (file_exists($path_vendor)) {
+                include $path_vendor;
+            }
+
         }
 
         static::$path_data = realpath(static::$path_data);

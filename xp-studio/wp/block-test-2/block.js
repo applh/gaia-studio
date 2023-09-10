@@ -6,7 +6,9 @@ console.log('HELLO from my test-2');
 
 // IIFE: use a anonymous function to avoid name conflicts
 // IIFE = Immediately Invoked Function Expression
-(function (blocks, element) {
+(function () {
+    let blocks = window.wp.blocks;
+    let element = window.wp.element;
     let my_block_name = 'xps/test-2';
     console.log('register... ' + my_block_name);
     let el = element.createElement;
@@ -55,16 +57,60 @@ console.log('HELLO from my test-2');
             className: 'my_test ' + (props.attributes.className ?? ''),
         });
 
+        // https://wordpress.github.io/gutenberg/?path=/docs/components-textareacontrol--docs
+        // add a TextControl
+        let tc = el(wp.components.TextControl, {
+            // label: 'My custom control',
+            // sync ok when value is changed elsewhere
+            value: props.attributes.my_meta,
+            onChange: function (value) {
+                props.setAttributes({ my_meta: value });
+            }
+        });
+        // add a TextareaControl
+        let tac = el(wp.components.TextareaControl, {
+            // label: 'My custom control',
+            // sync ok when value is changed elsewhere
+            value: props.attributes.my_meta,
+            onChange: function (value) {
+                props.setAttributes({ my_meta: value });
+            }
+        });
+
+        // add a InnerBlocks
+        // https://developer.wordpress.org/block-editor/how-to-guides/block-tutorial/nested-blocks-inner-blocks/
+        let ib = el(wp.blockEditor.InnerBlocks);
+        // add a RichText
+        let rt = el(wp.blockEditor.RichText, {
+            tagName: 'p',
+            value: props.attributes.my_meta,
+            onChange: function (value) {
+                props.setAttributes({ my_meta: value });
+            }
+        });
+
         // build html for editor
         return el(
             'div',  // tag
             bps, // tag attributes
             // children list
-            content,
-            input,
-            textarea,
-            ajax,
+            rt,
+            ib,
+            // tc,
+            // tac,
+            // content,
+            // input,
+            // textarea,
+            // ajax,
         );
+    }
+
+    // mandatory with InnerBlocks to save the inner blocks
+    // other props are saved automatically as json
+    let save = function (props) {
+        let saved = wp.blockEditor.useBlockProps.save();
+
+        return el('div', saved, el(wp.blockEditor.InnerBlocks.Content));
     }
 
     // WARNING: this must be the same as the block name in PHP
@@ -76,7 +122,7 @@ console.log('HELLO from my test-2');
     // WARNING: edit is called to render the block in the editor
     // gutenberg will call this function on any change to the block
 
-    blocks.registerBlockType(my_block_name, { edit });
+    blocks.registerBlockType(my_block_name, { edit, save });
 
     // add a inspector control 
     // https://developer.wordpress.org/block-editor/reference-guides/filters/block-filters/
@@ -112,7 +158,6 @@ console.log('HELLO from my test-2');
                             value: props.attributes.my_meta,
                             onChange: function (value) {
                                 props.setAttributes({ my_meta: value });
-                                // WARNING: need also to refresh the block
 
                             }
                         }),
@@ -122,7 +167,6 @@ console.log('HELLO from my test-2');
                             value: props.attributes.hello_text,
                             onChange: function (value) {
                                 props.setAttributes({ hello_text: value });
-                                // WARNING: need also to refresh the block
 
                             }
                         })
@@ -140,12 +184,5 @@ console.log('HELLO from my test-2');
         'xp-studio/with-inspector-controls',
         wp.compose.createHigherOrderComponent(my_controls, 'withInspectorControls'),
     );
-})
-    (
-        window.wp.blocks,
-        window.wp.element,
-        // window.wp.data
-        // NOT WORKING: window.wp.blockEditor is undefined when called
-        // window.wp.blockEditor
-    );
+})();
 

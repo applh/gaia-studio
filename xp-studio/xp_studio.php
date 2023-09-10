@@ -8,16 +8,28 @@ class xp_studio
     static function start()
     {
         // add a shortcode test to display php date and hour
-        add_shortcode('test', function () {
-            $res = "hello world " . date("Y-m-d H:i:s");
-            // get the block type registry
-            $block_types = WP_Block_Type_Registry::get_instance();
-            // get the block type
-            $block_type = $block_types->get_registered("xps/test");
-            $res = $block_type->render_callback ?? "---";
-            // check if is_callable
-            if (is_callable($res)) {
-                $res = $res([], "");
+        add_shortcode('test', function ($attrs, $content = null) {
+            $attrs = shortcode_atts([
+                "name" => "",
+                "bloc" => "",
+            ], $attrs);
+            extract($attrs);
+            $bloc ??= "";
+
+            if ($bloc == "") {
+                $res = "hello world " . date("Y-m-d H:i:s");
+            }
+            else {
+                // get the block type registry
+                $block_types = WP_Block_Type_Registry::get_instance();
+                // get the block type
+                $block_type = $block_types->get_registered($name);
+                $res = $block_type->render_callback ?? "---";
+                // check if is_callable
+                if (is_callable($res)) {
+                    $res = $res([], "");
+                }
+
             }
 
             return $res;
@@ -51,14 +63,44 @@ class xp_studio
     {
         // check if is 404
         if (is_404()) {
-            $data = [
-                "now" => date("Y-m-d H:i:s"),
-            ];
-            status_header(200);
-            header("Content-Type: application/json");
-            echo json_encode($data, JSON_PRETTY_PRINT);
-            die();
+            // MAKE A SIMPLE BRIDGE TO GAIA
+            // load gaia unique entry point
+            // cool: gaia will handle all requests with a single entry point
+            ob_start();
+            include __DIR__ . "/php/index.php";
+            $response = ob_get_clean();
+            // FIXME: should test if is 404 again
+            // check status
+            if (xpa_response::$status == 200) {
+                status_header(200);
+                // content-type is set by gaia
+                echo $response;
+                die();
+            }
         }
+    }
+
+    static function path_data ()
+    {
+        // set the path data for gaia to another plugon folder xp-data
+        $path_data = __DIR__ . "/../xp-data";
+        // check if exists
+        if (!file_exists($path_data)) {
+            // create the folder
+            mkdir($path_data);
+            // add index.php
+            $code = <<<CODE
+            <?php
+            /**
+             * Plugin Name: XP Data
+             * /
+ 
+            CODE;
+
+            file_put_contents($path_data . "/index.php",$code);
+        }
+        $path_data = realpath($path_data);
+        return $path_data;
     }
 
     // register blok shortcode
