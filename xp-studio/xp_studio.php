@@ -105,9 +105,13 @@ class xp_studio
     static function register_blocks()
     {
         // register blocks
-        include __DIR__ . '/wp/block-test-2/register.php';        
+        include __DIR__ . '/wp/block-basic/register.php';        
         // include __DIR__ . '/wp/block-test/register.php';
 
+        include __DIR__ . '/wp/block-test-2/register.php';        
+
+
+        // REACT BLOCKS
         $path_blocks = __DIR__ . "/blocks/*/block.json";
         $blocks = glob($path_blocks);
         // loop on blocks

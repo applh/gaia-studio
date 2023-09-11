@@ -84,3 +84,20 @@ wp-env destroy
     }
 
 ```
+
+## Gutenberg editor iframe
+
+https://make.wordpress.org/core/2021/06/29/blocks-in-an-iframed-template-editor/
+
+```
+
+// will provide the current document (window or iframe)
+// if p is a node
+const p = document.querySelector('p');
+const d = p.ownerDocument;
+const html = d.documentElement;
+
+// will provide the current window
+const v = p.ownerDocument.defaultView
+
+```
