@@ -4,6 +4,7 @@ console.log('HELLO from my test-2');
 // so variables declared here are global
 // there can be conflicts between different blocks
 
+
 // IIFE: use a anonymous function to avoid name conflicts
 // IIFE = Immediately Invoked Function Expression
 (function () {
@@ -93,6 +94,7 @@ console.log('HELLO from my test-2');
         // https://developer.wordpress.org/block-editor/reference-guides/packages/packages-data/#useselect
         let { custom } = wp.data.useSelect(
             async (select) => {
+                // wait for edit to be called by Gutenberg
                 // WILL IMPORT ONLY ONCE (ESM)
                 let app_vue = await import ("./app-vue.js");
 
