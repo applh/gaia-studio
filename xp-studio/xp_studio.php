@@ -106,9 +106,10 @@ class xp_studio
     {
         // register blocks
         include __DIR__ . '/wp/block-basic/register.php';        
+        include __DIR__ . '/wp/block-vue/register.php';        
         // include __DIR__ . '/wp/block-test/register.php';
 
-        include __DIR__ . '/wp/block-test-2/register.php';        
+        // include __DIR__ . '/wp/block-test-2/register.php';        
 
 
         // REACT BLOCKS
