@@ -1,12 +1,30 @@
 {
     "apiVersion": 3,
-    "name": "xps/form",
-    "title": "XPS: Form",
+    "name": "xps/form-ui",
+    "title": "XPS: Form UI",
     "category": "text",
     "icon": "universal-access-alt",
     "editorScript": "file:./block.js",
     "editorStyle": "file:./editor.css",
     "style": "file:./front.css",
+    "attributes":{
+        "ui_type": {
+            "type": "string",
+            "default": "text"
+        },
+        "ui_label": {
+            "type": "string",
+            "default": "label"
+        },
+        "ui_name": {
+            "type": "string",
+            "default": "name"
+        },
+        "ui_html": {
+            "type": "string",
+            "default": ""
+        }
+    },
     "supports": {
         "extraClassname": true,
         "align": true,

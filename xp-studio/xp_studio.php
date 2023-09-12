@@ -108,6 +108,7 @@ class xp_studio
         // register blocks
         include __DIR__ . '/wp/block-basic/register.php';        
         include __DIR__ . '/wp/block-form/register.php';        
+        include __DIR__ . '/wp/block-form-ui/register.php';        
         include __DIR__ . '/wp/block-vue/register.php';        
         // include __DIR__ . '/wp/block-test/register.php';
 

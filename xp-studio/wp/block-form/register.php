@@ -11,26 +11,8 @@ register_block_type( __DIR__, [
         $now = date("Y-m-d H:i:s");
         $html = <<<HTML
         <div class="xps-form $className" data-key="$form_key">
-            <em>$content</em>
             <form method="POST">
-                <label>
-                    <span>name</span>
-                    <input type="text" name="name" placeholder="name" required />
-                </label>
-                <label>
-                    <span>email</span>
-                    <input type="email" name="email" placeholder="email" required />
-                </label>
-                <label>
-                    <span>message</span>
-                    <textarea name="message" placeholder="message" rows="10" required></textarea>
-                </label>
-                <label>
-                    <span></span>
-                    <input type="hidden" name="@method" value="contact" />
-                    <button type="submit">SUBMIT</button>
-                </label>
-                <div class="feedback">...</div>
+                $content
             </form>
         </div>
         <script type="module">
@@ -70,6 +52,29 @@ register_block_type( __DIR__, [
     }
 ] );
 
+$default_html = <<<HTML
+<form method="POST">
+    <label>
+        <span>name</span>
+        <input type="text" name="name" placeholder="name" required autocomplete="on" />
+    </label>
+    <label>
+        <span>email</span>
+        <input type="email" name="email" placeholder="email" required autocomplete="on" />
+    </label>
+    <label>
+        <span>message</span>
+        <textarea name="message" placeholder="message" rows="10" required></textarea>
+    </label>
+    <label>
+        <span></span>
+        <input type="hidden" name="@method" value="contact" />
+        <button type="submit">SUBMIT</button>
+    </label>
+    <div class="feedback">...</div>
+</form>
+
+HTML;
 
 class xpw_form
 {
