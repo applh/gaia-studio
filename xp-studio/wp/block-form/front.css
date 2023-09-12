@@ -1,0 +1,45 @@
+.hello {
+    color: red;
+}
+
+.xps-form form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.xps-form form label {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    width: 100%;
+}
+.xps-form form label span {
+    width: 100%;
+    max-width: 100px;
+    text-align: right;
+    margin-right: 10px;
+}
+.xps-form form label input, .xps-form form label textarea {
+    width: 100%;
+    max-width: 640px;
+    margin-left: 10px;
+    padding:0.5rem;
+}
+.xps-form form button {
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: 0.25rem;
+    background-color: #eee;
+    cursor: pointer;
+    margin-left: 10px;
+    width: 100%;
+    max-width: 640px;
+}
+.xps-form .feedback {
+    text-align: right;
+    width: 100%;
+}

@@ -6,7 +6,8 @@
 class xp_studio
 {
     static $path_studio = __DIR__;
-
+    static $uri_rest_api = "/wp-json/xp-studio/v1/api";
+    
     static function start()
     {
         // add autoloader
@@ -106,6 +107,7 @@ class xp_studio
     {
         // register blocks
         include __DIR__ . '/wp/block-basic/register.php';        
+        include __DIR__ . '/wp/block-form/register.php';        
         include __DIR__ . '/wp/block-vue/register.php';        
         // include __DIR__ . '/wp/block-test/register.php';
 

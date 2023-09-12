@@ -1,0 +1,13 @@
+{
+    "apiVersion": 3,
+    "name": "xps/form",
+    "title": "XPS: Form",
+    "category": "text",
+    "icon": "universal-access-alt",
+    "editorScript": "file:./block.js",
+    "editorStyle": "file:./editor.css",
+    "style": "file:./front.css",
+    "supports": {
+        "extraClassname": true
+    }
+}
