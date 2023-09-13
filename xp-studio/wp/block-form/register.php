@@ -52,6 +52,7 @@ register_block_type( __DIR__, [
     }
 ] );
 
+
 $default_html = <<<HTML
 <form method="POST">
     <label>
@@ -82,6 +83,11 @@ class xpw_form
     {
         $now = date("Y-m-d H:i:s");
         $res = "...processing... ($now)";
+        $ui_callback = trim($_REQUEST["ui_callback"] ?? "");
+        // todo: should sanitize ui_callback
+        if ($ui_callback && is_callable($ui_callback)) {
+            $res = xpb_test::test();
+        }
         return $res;
     }
 }
