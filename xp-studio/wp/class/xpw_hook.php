@@ -43,6 +43,8 @@ class xpw_hook
 
         // register a rest api entry point
         // will be callable at /wp-json/xp-studio/v1/api
+        // https://developer.wordpress.org/rest-api/using-the-rest-api/authentication/#cookie-authentication
+        // X-XP-Nonce header
         register_rest_route('xp-studio/v1', '/api', [
             'methods' => ['GET', 'POST'],
             'callback' => 'xpw_hook::rest_api_test',
@@ -59,8 +61,36 @@ class xpw_hook
         return true;
     }
 
+    static function check_user ($request)
+    {
+        // get Authorization header
+        $auth = $request->get_header("Authorization");
+        // check if is basic
+        if (substr($auth, 0, 6) == "Basic ") {
+            // get user and password
+            $user_pass = base64_decode(substr($auth, 6));
+            // split user and password
+            list($user, $pass) = explode(":", $user_pass);
+            // trim
+            $user = trim($user);
+            $pass = trim($pass);
+
+            // check if user and password are valid
+            $user = wp_authenticate($user, $pass);
+            if ($user->ID ?? false) {
+                // set current user
+                wp_set_current_user($user);
+            }
+        }
+        return $auth; // wp_get_current_user();
+    }
+
     static function rest_api_test (WP_REST_Request $request)
     {
+        // check user
+        $nonce = $request->get_header("X-WP-Nonce");
+        $auth = xpw_hook::check_user($request);
+
         // get action
         $class = $request->get_param("@class") ?? "form";
         $method = $request->get_param("@method") ?? "";
@@ -77,9 +107,11 @@ class xpw_hook
         // return a json response
         return new WP_REST_Response([
             "status" => "ok",
+            "nonce" => $nonce, // "X-XP-Nonce
+            "auth" => $auth,
             "date" => date("Y-m-d H:i:s"),
+            "user" => wp_get_current_user(),
             "{$class}_{$method}" => $res ?? null,
-            "message" => "hello world",
             "request" => $request->get_params(),
             "files" => $_FILES,
             "cookies" => $_COOKIE,

@@ -13,9 +13,26 @@
 class xpi_code
 {
     //#class_start
+
+    static function check_user ()
+    {
+        // security check
+ 
+        // check if current user can update plugins
+        if (current_user_can('activate_plugins')) {
+            // get current user capabilities
+            $access_ok = true;
+        }
+        return $access_ok ?? false;
+    }
+
     static function load_data ()
     {
         $res = [];
+        // check user
+        if (!xpi_code::check_user()) {
+            return $res;
+        }
 
         // FIXME: not working ??
         // security check
@@ -58,6 +75,11 @@ class xpi_code
     static function create ()
     {
         $res = [];
+        // check user
+        if (!xpi_code::check_user()) {
+            return $res;
+        }
+
         // get the post data: title, name, code
         $title = $_REQUEST['title'] ?? "";
         $name = $_REQUEST['name'] ?? "";
@@ -72,14 +94,21 @@ class xpi_code
         $name = preg_replace("/[^a-zA-Z0-9-_]/", "", $name);
         // check if name is empty
         if (!empty($name)) {
+            // check if name is already used then update existing post
+            // find post_type = 'xps-code' where category = 'php' and name = $name
+            $found = get_page_by_path($name, OBJECT, 'xps-code');
+            // check if found
+            if ($found ?? false) {
+                // get the id
+                $found_id = $found->ID;
+            }
+
             // add new post in post_type = 'xps-code' and category = 'php'
             $category = "php";
             $category_id = get_cat_ID($category);
-            // deactivate wp_insert_post() hook on excerpt
-            remove_filter('content_save_pre', 'wp_filter_post_kses');
-            remove_filter('content_filtered_save_pre', 'wp_filter_post_kses');
-            // insert the post
+            // insert/update the post
             $post = [
+                "ID" => $found_id ?? 0,
                 "post_title" => $title,
                 "post_content" => "",
                 "post_name" => $name,
@@ -109,6 +138,11 @@ class xpi_code
     static function delete ()
     {
         $res = [];
+        // check user
+        if (!xpi_code::check_user()) {
+            return $res;
+        }
+
         // get the post data: id
         $id = intval($_REQUEST['id'] ?? 0);
         // check if id is empty

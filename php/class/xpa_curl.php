@@ -83,6 +83,8 @@ class xpa_curl
         $items = "";
         foreach ($rows as $row) {
             extract($row);
+            // store scrap_id (as $id will be overwritten...)
+            $scrap_id = $id;
             $nb_lis = 0;
             $nb_inserts = 0;
 
@@ -164,7 +166,7 @@ class xpa_curl
             }
 
             // update row in geocms by $id  with z = $nb_lis
-            xpa_model::update("geocms", $id, [ 
+            xpa_model::update("geocms", $scrap_id, [ 
                 "y" => $nb_inserts, 
                 "z" => $nb_lis,
                 "updated" => date("Y-m-d H:i:s"),

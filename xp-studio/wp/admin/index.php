@@ -5,52 +5,76 @@ if (!is_callable('add_action')) {
 }
 
 $uri_rest_api = xp_studio::$uri_rest_api;
+$user = wp_get_current_user();
+$user_login = $user->user_login ?? "";
 
+// rest api nonce
+$rest_api_nonce = wp_create_nonce('wp_rest');
 
 ?>
 <div id="app"></div>
 
 <template id="template-app">
     <h1>XP Studio</h1>
-    <hr/>
-    <em>Add a now code</em>
-    <hr/>
-    <el-form :inline="false" :model="formInline" class="demo-form-inline">
-        <el-form-item label="title">
-            <el-input v-model="formInline.title" placeholder="title" clearable />
-        </el-form-item>
-        <el-form-item label="name">
-            <el-input v-model="formInline.name" placeholder="name" clearable />
-        </el-form-item>
-        <el-form-item label="code">
-            <el-input v-model="formInline.code" type="textarea" autosize placeholder="code" clearable />
-        </el-form-item>
-        <el-form-item>
-            <el-button type="primary" @click.prevent="act_code_create">CREATE</el-button>
-        </el-form-item>
-    </el-form>
     <hr />
-    <el-tree :data="tree_data" show-checkbox draggable></el-tree>
+    <input v-model="api_nonce" type="text" placeholder="nonce" />
+    <input v-model="api_user" type="text" placeholder="user" />
+    <input v-model="api_password" type="password" placeholder="application password" />
+    <el-button type="success" @click.prevent="act_code_refresh">Refresh</el-button>
     <hr />
-    <el-tree :data="tree_data" show-checkbox draggable></el-tree>
     <hr />
-    <el-table :data="tree_data" row-key="id" :tree-props="{ children: 'children' }" :default-sort="{ prop: 'id', order: 'descending' }">
-        <el-table-column prop="id" label="ID" sortable width="120"></el-table-column>
-        <el-table-column prop="label" label="title" sortable width="240"></el-table-column>
-        <el-table-column prop="name" label="name" sortable width="240"></el-table-column>
-        <el-table-column prop="code" label="code" sortable width="640">
-            <template #default="{ row }">
-                <textarea v-model="row.code" rows="10"></textarea>
-            </template>
-        </el-table-column>
-        <el-table-column prop="id" label="delete" sortable width="120">
-            <template #default="{ row }">
-                <el-button type="danger" @click="act_code_delete(row)">DELETE</el-button>
-            </template>
-        </el-table-column>
-    </el-table>
+    <el-row>
+        <el-col :span="14">
+            <el-table :data="tree_data" row-key="id" :tree-props="{ children: 'children' }" :default-sort="{ prop: 'id', order: 'descending' }">
+                <el-table-column prop="id" label="ID" sortable width="120"></el-table-column>
+                <el-table-column prop="label" label="name" sortable width="120">
+                    <template #default="{ row }">
+                        <b>{{ row.name}}</b>
+                        <hr/>
+                        <div>{{ row.label }}</div>
+                        <hr/>
+                        <el-button type="primary" @click="act_code_update(row)">EDIT</el-button>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="code" label="code" sortable width="640">
+                    <template #default="{ row }">
+                        <textarea v-model="row.code" rows="10"></textarea>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="id" label="update" sortable width="120">
+                    <template #default="{ row }">
+                        <el-button type="primary" @click="act_code_update(row)">EDIT</el-button>
+                        <hr/>
+                        <el-button type="danger" @click="act_code_delete(row)">DELETE</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </el-col>
+        <el-col :span="5">
+            <em>Add a now code</em>
+            <hr />
+            <el-form :inline="false" :model="formInline" class="demo-form-inline">
+                <el-form-item label="title">
+                    <el-input v-model="formInline.label" placeholder="title" clearable />
+                </el-form-item>
+                <el-form-item label="name">
+                    <el-input v-model="formInline.name" placeholder="name" clearable />
+                </el-form-item>
+                <el-form-item label="code">
+                    <el-input v-model="formInline.code" type="textarea" :autosize="{ minRows: 5 }" placeholder="code" clearable />
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click.prevent="act_code_create">SAVE</el-button>
+                </el-form-item>
+            </el-form>
+            <el-tree :data="tree_data" show-checkbox draggable></el-tree>
+        </el-col>
+        <el-col :span="5">
+            <el-calendar v-model="cal_date"></el-calendar>
+            <el-tree :data="tree_data" show-checkbox draggable></el-tree>
+        </el-col>
+    </el-row>
     <hr />
-    <el-calendar v-model="cal_date" />
 </template>
 
 <!-- import map -->
@@ -69,6 +93,9 @@ $uri_rest_api = xp_studio::$uri_rest_api;
     import ElementPlus from 'element-plus';
 
     let data = {
+        api_nonce: "<?php echo $rest_api_nonce; ?>",
+        api_user: "<?php echo $user_login; ?>",
+        api_password: "",
         uri_rest_api: "<?php echo $uri_rest_api; ?>",
         message: "hello Vue",
         cal_date: new Date(),
@@ -91,31 +118,42 @@ $uri_rest_api = xp_studio::$uri_rest_api;
             },
         ],
         formInline: {
-            title: '',
+            label: '',
             name: '',
             code: '',
         }
     };
 
-    async function load_data() {
-        // load data from api
-        let url = data.uri_rest_api;
-        //  + "?@class=code&@method=load_data";
-
-        // make POST request
-        let fd = new FormData();
-        fd.append("@class", "code");
-        fd.append("@method", "load_data");
-        let res = await fetch(url, {
-            method: "POST",
-            body: fd,
-        });
-        let json = await res.json();
-        console.log(json);
-        return json;
-    }
 
     let methods = {
+        async send_fetch(fd) {
+            // make POST request
+            let headers = new Headers();
+            // add nonce
+            if (this.api_nonce) {
+                headers.append('X-WP-Nonce', this.api_nonce);
+            }
+            if (this.api_user && this.api_password) {
+                headers.append('Authorization', 'Basic ' + btoa(this.api_user + ':' + this.api_password));
+            }
+            let res = await fetch(this.uri_rest_api, {
+                method: "POST",
+                body: fd,
+                // enable cors and credentials
+                mode: "cors",
+                credentials: "include",
+                headers,
+            });
+            let json = await res.json();
+            console.log(json);
+            return json;
+        },
+        async load_data() {
+            let fd = new FormData();
+            fd.append("@class", "code");
+            fd.append("@method", "load_data");
+            return await this.send_fetch(fd);
+        },
         act_code_delete: async function(row) {
             console.log("act_code_delete", row);
             // make POST request
@@ -123,16 +161,15 @@ $uri_rest_api = xp_studio::$uri_rest_api;
             fd.append("@class", "code");
             fd.append("@method", "delete");
             fd.append("id", row.id);
-            let res = await fetch(this.uri_rest_api, {
-                method: "POST",
-                body: fd,
-            });
-            let json = await res.json();
-            console.log(json);
+            let json = await this.send_fetch(fd);
             // if json.code_load_data is defined then copy to tree_data
             if (json.code_delete) {
                 this.tree_data = json.code_delete;
             }
+        },
+        act_code_update: async function(row) {
+            // copy row to formInline
+            this.formInline = Object.assign({}, row);
         },
         act_code_create: async function(event) {
             console.log("act_code_create", event);
@@ -140,7 +177,8 @@ $uri_rest_api = xp_studio::$uri_rest_api;
             let fd = new FormData();
             fd.append("@class", "code");
             fd.append("@method", "create");
-            fd.append("title", this.formInline.title);
+            // warning: label is used by element-plus for trees
+            fd.append("title", this.formInline.label);
             fd.append("name", this.formInline.name);
             // add code as file named code.php
             let blob = new Blob([this.formInline.code], {
@@ -148,19 +186,20 @@ $uri_rest_api = xp_studio::$uri_rest_api;
             });
             fd.append("code", blob, "code.php");
             // make POST request with cors enabled and credentials
-            let res = await fetch(this.uri_rest_api, {
-                method: "POST",
-                body: fd,
-                mode: "cors",
-                credentials: "include",
-            });
-            let json = await res.json();
-            console.log(json);
+            let json = await this.send_fetch(fd);
             // if json.code_load_data is defined then copy to tree_data
             if (json.code_create) {
                 this.tree_data = json.code_create;
             }
 
+        },
+        act_code_refresh: async function() {
+            // load code from api
+            let json = await this.load_data();
+            // if json.code_load_data is defined then copy to tree_data
+            if (json.code_load_data) {
+                this.tree_data = json.code_load_data;
+            }
         }
     }
 
@@ -178,7 +217,7 @@ $uri_rest_api = xp_studio::$uri_rest_api;
             document.head.appendChild(link);
 
             // load code from api
-            let json = await load_data();
+            let json = await this.load_data();
             // if json.code_load_data is defined then copy to tree_data
             if (json.code_load_data) {
                 this.tree_data = json.code_load_data;
