@@ -1,6 +1,6 @@
 <?php
 /**
- * xpa_os
+ * xpw_hook
  * 
  * created: 2023-09-10 08:02:05
  * author: applh/gaia
@@ -46,8 +46,17 @@ class xpw_hook
         register_rest_route('xp-studio/v1', '/api', [
             'methods' => ['GET', 'POST'],
             'callback' => 'xpw_hook::rest_api_test',
-            "permission_callback" => "__return_true",
+            "permission_callback" => "xpw_hook::rest_api_permission",
         ]);
+    }
+
+    static function rest_api_permission ()
+    {
+        // check if current user is admin
+        // $res = current_user_can('activate_plugins');
+        // warning: public access
+        // each api will have to check security permissions
+        return true;
     }
 
     static function rest_api_test (WP_REST_Request $request)
@@ -58,7 +67,7 @@ class xpw_hook
         // TODO: ADD SECURITY CHECK
         // sanitize class and method
         
-        $callback = "xpw_$class::$method";
+        $callback = "xpi_$class::$method";
         // check if is_callable
         if (is_callable($callback)) {
             // call the callback
@@ -73,6 +82,7 @@ class xpw_hook
             "message" => "hello world",
             "request" => $request->get_params(),
             "files" => $_FILES,
+            "cookies" => $_COOKIE,
         ]);
     }
     //#class_end

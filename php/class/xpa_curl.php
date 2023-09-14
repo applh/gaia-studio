@@ -77,12 +77,15 @@ class xpa_curl
         $skip_get ??= true;
 
         // get the rows from db.scrap order by z desc
-        $rows = xpa_model::read("scrap", order_by: "ORDER BY z desc");
+        $rows = xpa_model::read("scrap", order_by: "ORDER BY z desc", where: "z IS NULL");
 
         $hashs = [];
         $items = "";
         foreach ($rows as $row) {
             extract($row);
+            $nb_lis = 0;
+            $nb_inserts = 0;
+
             $code ??= "";
             if ($code) {
                 // complete code with html and body tags
@@ -93,6 +96,7 @@ class xpa_curl
                 $doc->loadHTML('<?xml encoding="UTF-8">' . $code);
                 $xpath = new DOMXPath($doc);
                 $lis = $xpath->query("//li");
+                $nb_lis = $lis->length;
 
                 // print the href and text values
                 foreach ($lis as $li) {
@@ -146,6 +150,8 @@ class xpa_curl
                                 ];
                                 // error_log(print_r($row, true));
                                 xpa_model::insert("geocms", $row);
+                                // count inserts
+                                $nb_inserts++;
                             } else {
                                 // delete the row
                                 $row = $rows[0];
@@ -156,7 +162,16 @@ class xpa_curl
                     }
                 }
             }
+
+            // update row in geocms by $id  with z = $nb_lis
+            xpa_model::update("geocms", $id, [ 
+                "y" => $nb_inserts, 
+                "z" => $nb_lis,
+                "updated" => date("Y-m-d H:i:s"),
+            ]);
+
         }
+
         return $items;
     }
 

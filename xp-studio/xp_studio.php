@@ -116,7 +116,10 @@ class xp_studio
         if (!file_exists($path)) {
             mkdir($path);
         }
-        $path = "$path/$classname.php";
+        // $classname could have namespace
+        // so easier to hash md5 to get a unique filename
+        $hash = md5($classname);
+        $path = "$path/cache-$hash.php";
         $path = realpath($path);
         if ($path !== false) {
             $mtime = filemtime($path);
@@ -163,7 +166,10 @@ class xp_studio
                 if (!file_exists($path)) {
                     mkdir($path);
                 }
-                $path = "$path/$classname.php";
+                // $classname could have namespace
+                // so easier to hash md5 to get a unique filename
+                $hash = md5($classname);
+                $path = "$path/cache-$hash.php";
                 // check file mtime if older than 1 day
                 // then update the file
                 if (file_exists($path)) {

@@ -77,7 +77,7 @@ $default_html = <<<HTML
 
 HTML;
 
-class xpw_form
+class xpi_form
 {
     static function contact ()
     {
@@ -86,7 +86,7 @@ class xpw_form
         $ui_callback = trim($_REQUEST["ui_callback"] ?? "");
         // todo: should sanitize ui_callback
         if ($ui_callback && is_callable($ui_callback)) {
-            $res = xpb_test::test();
+            $res = $ui_callback();
         }
         return $res;
     }
