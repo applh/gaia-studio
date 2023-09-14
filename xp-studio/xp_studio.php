@@ -126,10 +126,15 @@ class xp_studio
             $now = time();
             $ttl= $mtime + xp_studio::$cache_duration - $now;
             if ($ttl > 0) {
-                // include the file
-                include $path;
+                // headers before include as hack could send output in include
                 header("X-XP-Studio-Cache: $path");
                 header("X-XP-Studio-Cache-ttl: $ttl");
+
+                // hack: include once the file as another autoloader could also include it
+                // in case the file doesn't define the class...
+                // include the file
+                include_once $path;
+                return true;
             }
             else {
                 // WARNING: can be dangerous
@@ -187,11 +192,14 @@ class xp_studio
                 }
 
                 // include the file
-                include $path;
+                include_once $path;
+                $found = true;
             }
 
         } 
         wp_reset_postdata();
+
+        return $found ?? false;
     }
 
     static function path_data ()

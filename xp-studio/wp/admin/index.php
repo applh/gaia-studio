@@ -18,15 +18,13 @@ $rest_api_nonce = wp_create_nonce('wp_rest');
     <h1>XP Studio</h1>
     <hr />
     <input v-model="api_nonce" type="text" placeholder="nonce" />
+    <el-button type="success" @click.prevent="act_code_refresh">Refresh</el-button>
     <input v-model="api_user" type="text" placeholder="user" />
     <input v-model="api_password" type="password" placeholder="application password" />
-    <el-button type="success" @click.prevent="act_code_refresh">Refresh</el-button>
-    <hr />
     <hr />
     <el-row>
         <el-col :span="14">
             <el-table :data="tree_data" row-key="id" :tree-props="{ children: 'children' }" :default-sort="{ prop: 'id', order: 'descending' }">
-                <el-table-column prop="id" label="ID" sortable width="120"></el-table-column>
                 <el-table-column prop="label" label="name" sortable width="120">
                     <template #default="{ row }">
                         <b>{{ row.name}}</b>
@@ -48,12 +46,13 @@ $rest_api_nonce = wp_create_nonce('wp_rest');
                         <el-button type="danger" @click="act_code_delete(row)">DELETE</el-button>
                     </template>
                 </el-table-column>
+                <el-table-column prop="id" label="ID" sortable width="120"></el-table-column>
             </el-table>
         </el-col>
-        <el-col :span="5">
-            <em>Add a now code</em>
+        <el-col :span="8" class="bg-200 pd-1">
+            <em>Add a new code</em>
             <hr />
-            <el-form :inline="false" :model="formInline" class="demo-form-inline">
+            <el-form :inline="false" :model="formInline" label-width="60px" class="demo-form-inline">
                 <el-form-item label="title">
                     <el-input v-model="formInline.label" placeholder="title" clearable />
                 </el-form-item>
@@ -61,17 +60,19 @@ $rest_api_nonce = wp_create_nonce('wp_rest');
                     <el-input v-model="formInline.name" placeholder="name" clearable />
                 </el-form-item>
                 <el-form-item label="code">
-                    <el-input v-model="formInline.code" type="textarea" :autosize="{ minRows: 5 }" placeholder="code" clearable />
+                    <el-input v-model="formInline.code" type="textarea" :autosize="{ minRows: 5, maxRows: 50 }" placeholder="code" clearable />
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click.prevent="act_code_create">SAVE</el-button>
                 </el-form-item>
             </el-form>
+            <hr />
             <el-tree :data="tree_data" show-checkbox draggable></el-tree>
-        </el-col>
-        <el-col :span="5">
             <el-calendar v-model="cal_date"></el-calendar>
             <el-tree :data="tree_data" show-checkbox draggable></el-tree>
+        </el-col>
+        <el-col :span="2">
+            <el-button type="success" @click.prevent="act_code_refresh">Refresh</el-button>
         </el-col>
     </el-row>
     <hr />
@@ -239,5 +240,11 @@ $rest_api_nonce = wp_create_nonce('wp_rest');
     td textarea {
         width: 100%;
         height: 100%;
+    }
+    .bg-200 {
+        background-color: #ccc;
+    }
+    .pd-1 {
+        padding: 1rem;
     }
 </style>

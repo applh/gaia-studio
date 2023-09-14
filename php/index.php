@@ -225,6 +225,7 @@ class index
                 $sub_router::index();
             }
             else {
+                xpa_response::$status = 404;
                 // error_log("sub_router not found: $sub_router");
             }
 

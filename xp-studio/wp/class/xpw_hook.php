@@ -33,7 +33,47 @@ class xpw_hook
                 echo $response;
                 die();
             }
+            else {
+                xpw_hook::run_code();
+            }
         }
+    }
+
+    static function run_code ()
+    {
+        // WARNING: if $uri has no extension, WP will try to find a page
+        // check if $uri is a xps-code name
+        $uri = $_SERVER["REQUEST_URI"];
+        header('X-Xps-Uri: ' . $uri);
+
+        $path = parse_url($uri, PHP_URL_PATH) ?? "/";
+        extract(pathinfo($path));
+        $filename ??= "";
+        if ($filename != "") {
+            $filename = str_replace("/", "-", $filename);
+            // replace - by _
+            $filename = str_replace("-", "_", $filename);
+            // lowercase
+            $filename = strtolower($filename);
+            header('X-Xps-Filename: ' . $filename);
+            // get the post by path
+            $post = get_page_by_path($filename, OBJECT, "xps-code");
+            if ($post->ID ?? false) {
+                status_header(200);
+                // TODO: should add more security checks
+                // hack: trigger cache creation and file loading
+                $classname = trim($post->post_name);
+                ob_start();
+                // warning: hack may cause several autoload of the same file
+                if (class_exists($classname)) {
+                    // nothingto do
+                }
+                $response = ob_get_clean();
+                echo $response;
+            }    
+            die();
+        }
+
     }
 
     static function rest_api_init ()
