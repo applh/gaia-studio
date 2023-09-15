@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Plugin Name: XP Studio
  * Description: XP Studio adds powerful Code Management System features to WP. (AI = Content MS * Code MS)
@@ -13,7 +14,7 @@ class xp_studio
     static $autoloaders = [
         "wp" => "xp_studio::autoload_wp",
         "gaia" => "xp_studio::autoload_gaia",
-//        "cache" => "xp_studio::autoload_cache_code",
+        "cache" => "xp_studio::autoload_cache_code",
 //        "db" => "xp_studio::autoload_db_code",
     ];
 
@@ -26,13 +27,12 @@ class xp_studio
 
         if (is_admin()) {
             xpw_admin::setup_admin();
-        }
-        else {
+        } else {
             xp_studio::setup_front();
         }
     }
 
-    static function setup_front ()
+    static function setup_front()
     {
         // get config file from data folder
         $path_data = xp_studio::path_data();
@@ -40,8 +40,7 @@ class xp_studio
         if (file_exists($path_config)) {
             // include the config file
             include $path_config;
-        }
-        else {
+        } else {
             // create the config file
             $now = date("Y-m-d H:i:s");
             $code = <<<CODE
@@ -55,10 +54,10 @@ class xp_studio
             file_put_contents($path_config, $code);
         }
 
-        xp_studio::over_host();
+        xp_studio::over_host(true);
     }
 
-    static function over_host ()
+    static function over_host($wait = false)
     {
         // check hosts to ovverride WP
         $host = $_SERVER['SERVER_NAME'];
@@ -67,17 +66,23 @@ class xp_studio
         header("X-XP-Studio-Host: $host");
         $host_route = $wp_hosts[$host] ?? false;
         if ($host_route) {
+            header("X-XP-Studio-Host-Route: $host_route");
+            
             // check if is_callable
             if (is_callable($host_route)) {
                 $host_route();
+                // WARNING: STOP WP HERE
+                die();
             }
-            // WARNING: STOP WP HERE
-            die();
+            elseif ($wait) {
+                header("X-XP-Studio-Host-Wait: $host_route");
+                // wait for init as may need to load code from db
+                add_action("init", "xp_studio::over_host");
+            }
         }
-
     }
 
-    static function autoload_router ($classname)
+    static function autoload_router($classname)
     {
         // loop on autoloaders
         foreach (xp_studio::$autoloaders as $name => $autoloader) {
@@ -90,7 +95,8 @@ class xp_studio
         }
     }
 
-    static function autoload_wp ($classname) {
+    static function autoload_wp($classname)
+    {
         // check if file exists in wp/class/$classname.php
         $path = __DIR__ . "/wp/class/$classname.php";
         if (file_exists($path)) {
@@ -100,7 +106,8 @@ class xp_studio
         return $found ?? false;
     }
 
-    static function autoload_gaia ($classname) {
+    static function autoload_gaia($classname)
+    {
         // check if file exists in wp/class/$classname.php
         $path = __DIR__ . "/php/class/$classname.php";
         if (file_exists($path)) {
@@ -110,7 +117,7 @@ class xp_studio
         return $found ?? false;
     }
 
-    static function init ()
+    static function init()
     {
         // add a hook on template_redirect is404
         add_action('template_redirect', 'xpw_hook::template_redirect');
@@ -129,8 +136,7 @@ class xp_studio
 
             if ($bloc == "") {
                 $res = "hello world " . date("Y-m-d H:i:s");
-            }
-            else {
+            } else {
                 // get the block type registry
                 $block_types = WP_Block_Type_Registry::get_instance();
                 // get the block type
@@ -140,12 +146,11 @@ class xp_studio
                 if (is_callable($res)) {
                     $res = $res([], "");
                 }
-
             }
 
             return $res;
         });
-        
+
         // https://github.com/WordPress/gutenberg-examples/blob/trunk/blocks-jsx/meta-block/index.php
         // register_post_meta(
         //     'post',
@@ -158,12 +163,12 @@ class xp_studio
         // );
 
         xp_studio::register_blocks();
-        
+
         // register post types
         xp_studio::register_post_types();
     }
 
-    static function register_post_types ()
+    static function register_post_types()
     {
         // register post type code
         // https://developer.wordpress.org/reference/functions/register_post_type/
@@ -175,7 +180,7 @@ class xp_studio
             "hierarchical" => true,
             "show_in_rest" => true,
             "menu_icon" => "dashicons-editor-code",
-            "supports" => ["title", "editor", "author", "thumbnail", "excerpt", "custom-fields", "revisions", "page-attributes", "post-formats"], 
+            "supports" => ["title", "editor", "author", "thumbnail", "excerpt", "custom-fields", "revisions", "page-attributes", "post-formats"],
             "can_export" => true,
         ]);
         // add category and tag support
@@ -184,11 +189,12 @@ class xp_studio
 
         // WARNING: can slow down app if too many inexisting classes
         // add autoload_code
-        spl_autoload_register("xp_studio::autoload_cache_code");
-        spl_autoload_register("xp_studio::autoload_db_code");
+        // spl_autoload_register("xp_studio::autoload_cache_code");
+        // spl_autoload_register("xp_studio::autoload_db_code");
+        xp_studio::$autoloaders["db"] = "xp_studio::autoload_db_code";
     }
 
-    static function autoload_cache_code ($classname)
+    static function autoload_cache_code($classname)
     {
         $path_data = xp_studio::path_data();
         // save the code in a file $path_data/class/$classname.php
@@ -205,7 +211,7 @@ class xp_studio
         if ($path !== false) {
             $mtime = filemtime($path);
             $now = time();
-            $ttl= $mtime + xp_studio::$cache_duration - $now;
+            $ttl = $mtime + xp_studio::$cache_duration - $now;
             if ($ttl > 0) {
                 // headers before include as hack could send output in include
                 header("X-XP-Studio-Cache: $path");
@@ -215,18 +221,20 @@ class xp_studio
                 // in case the file doesn't define the class...
                 // include the file
                 include_once $path;
-                return true;
-            }
-            else {
+                $found = true;
+            } else {
                 // WARNING: can be dangerous
                 // remove the file
                 unlink($path);
             }
         }
+        return $found ?? false;
     }
 
-    static function autoload_db_code ($classname)
+    static function autoload_db_code($classname)
     {
+        // debug
+        header("X-XP-Studio-DB: $classname");
         // WARNING: can slow down app if too many inexisting classes
         // search in post type xps-code with category php
         $args = [
@@ -266,8 +274,7 @@ class xp_studio
                         // update the file
                         file_put_contents($path, $excerpt);
                     }
-                }
-                else {
+                } else {
                     // create the file
                     file_put_contents($path, $excerpt);
                 }
@@ -276,14 +283,13 @@ class xp_studio
                 include_once $path;
                 $found = true;
             }
-
-        } 
+        }
         wp_reset_postdata();
 
         return $found ?? false;
     }
 
-    static function path_data ()
+    static function path_data()
     {
         // set the path data for gaia to another plugon folder xp-data
         $path_data = __DIR__ . "/../xp-data";
@@ -309,9 +315,8 @@ class xp_studio
  
             CODE;
 
-            file_put_contents($path_data . "/index.php",$code);
-        }
-        else {
+            file_put_contents($path_data . "/index.php", $code);
+        } else {
             $path_data = $found[0];
         }
         $path_data = realpath($path_data);
@@ -322,10 +327,10 @@ class xp_studio
     static function register_blocks()
     {
         // register blocks
-        include __DIR__ . '/wp/block-basic/register.php';        
-        include __DIR__ . '/wp/block-form/register.php';        
-        include __DIR__ . '/wp/block-form-ui/register.php';        
-        include __DIR__ . '/wp/block-vue/register.php';        
+        include __DIR__ . '/wp/block-basic/register.php';
+        include __DIR__ . '/wp/block-form/register.php';
+        include __DIR__ . '/wp/block-form-ui/register.php';
+        include __DIR__ . '/wp/block-vue/register.php';
         // include __DIR__ . '/wp/block-test/register.php';
 
         // include __DIR__ . '/wp/block-test-2/register.php';        
@@ -343,9 +348,7 @@ class xp_studio
                 dirname($block),
             );
         }
-
     }
-
 }
 
 xp_studio::start();

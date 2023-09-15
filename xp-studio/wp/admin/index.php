@@ -133,6 +133,8 @@ $rest_api_nonce = wp_create_nonce('wp_rest');
 
     // store the async components
     wp_admin.store.async_components = ["wp-admin-code", "wp-admin-options"];
+    wp_admin.store.extra_css["element-plus"] = "/assets/element-plus/index-min.css";
+
     // store the api config from PHP to JS
     wp_admin.store.api_rest_uri = "<?php echo $uri_rest_api; ?>";
     wp_admin.store.api_nonce = "<?php echo $rest_api_nonce; ?>";
@@ -175,12 +177,6 @@ $rest_api_nonce = wp_create_nonce('wp_rest');
         // copy data to instance
         data: () => Object.assign({}, data),
         created: async function() {
-            // load css assets /assets/element-plus/index-min.css
-            let link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.type = 'text/css';
-            link.href = '/assets/element-plus/index-min.css';
-            document.head.appendChild(link);
             // load data
             this.act_code_refresh();
         },

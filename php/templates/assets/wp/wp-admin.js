@@ -33,8 +33,23 @@ const store = reactive({
         label: '',
         name: '',
         code: '',
-    }
+    },
+    extra_css: {},
 });
+
+let load_extra_css = function() {
+    // loop on store.extra_css
+    for (let key in store.extra_css) {
+        let url = store.extra_css[key];
+        console.log('loading css', url);
+        // load css assets /assets/element-plus/index-min.css
+        let link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = url;
+        document.head.appendChild(link);
+    }
+}
 
 let send_fetch = async function (fd) {
     // make POST request
@@ -66,6 +81,9 @@ export default {
 
     install(app, options) {
         console.log('wp-admin-options.js install');
+        // load extra css
+        load_extra_css();
+
         // register async components
         store.async_components.forEach((component) => {
             console.log('registering', component);
