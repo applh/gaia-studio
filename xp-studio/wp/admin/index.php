@@ -107,9 +107,7 @@ $rest_api_nonce = wp_create_nonce('wp_rest');
                 </el-form-item>
             </el-form>
             <hr />
-            <el-tree :data="$store.tree_data" show-checkbox draggable></el-tree>
             <el-calendar v-model="$store.cal_date"></el-calendar>
-            <el-tree :data="$store.tree_data" show-checkbox draggable></el-tree>
         </el-col>
     </el-row></template>
 

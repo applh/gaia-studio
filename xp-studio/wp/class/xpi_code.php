@@ -26,6 +26,60 @@ class xpi_code
         return $access_ok ?? false;
     }
 
+    static function config_load ()
+    {
+        $res = "";
+        // check user
+        if (!xpi_code::check_user()) {
+            return $res;
+        }
+
+        // get path_data
+        $path_data = xp_studio::path_data();
+        // get path_config
+        $path_config = $path_data . "/config.php";
+        // check if file exists
+        if (file_exists($path_config)) {
+            // load config
+            $res = file_get_contents($path_config);
+        }
+        else {
+            $res = "file not found: " . $path_config;
+        }
+        return $res;
+    }
+
+    static function config_save ()
+    {
+        $res = "";
+        // check user
+        if (!xpi_code::check_user()) {
+            return $res;
+        }
+
+        // get path_data
+        $path_data = xp_studio::path_data();
+        // get path_config
+        $path_config = $path_data . "/config.php";
+        // check if file exists
+        if (file_exists($path_config)) {
+            // save config
+            // get config.php from $FILES
+            $tmp_name = $_FILES["config_code"]["tmp_name"] ?? "";
+            if ($tmp_name != "") {
+                $code = file_get_contents($tmp_name);
+            }
+            if ($code ?? false) {
+                file_put_contents($path_config, $code);
+                $res = "config saved";
+            }
+        }
+        else {
+            $res = "file not found: " . $path_config;
+        }
+        return $res;
+    }
+    
     static function load_data ()
     {
         $res = [];

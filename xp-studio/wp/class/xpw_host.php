@@ -14,7 +14,7 @@ class xpw_host
 {
     //#class_start
 
-    static function test ()
+    static function index ()
     {
         // xpa_dev::code("xpw_webpage", __DIR__);
 
