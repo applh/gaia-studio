@@ -15,22 +15,62 @@ $rest_api_nonce = wp_create_nonce('wp_rest');
 <div id="app"></div>
 
 <template id="template-app">
-    <h1>XP Studio</h1>
-    <hr />
-    <input v-model="api_nonce" type="text" name="api_nonce" placeholder="nonce" />
-    <el-button type="success" @click.prevent="act_code_refresh">Refresh</el-button>
-    <input v-model="api_user" type="text" name="api_user" placeholder="user" />
-    <input v-model="api_password" type="password" name="api_password" placeholder="application password" autocomplete="new-password" />
-    <hr />
-    <el-row>
+    <h1>XP Studio ({{ page }})</h1>
+    <el-container>
+        <el-aside width="60px">
+            <el-menu default-active="2" class="el-menu-vertical-demo" :collapse="isCollapse" @open="handleOpen" @close="handleClose">
+                <el-menu-item index="1">
+                    <img class="icon" src="/assets/element-plus/icon.png" alt="" @click="act_nav('code')" />
+                    <template #title>Code</template>
+                </el-menu-item>
+                <el-menu-item index="2">
+                    <img class="icon" src="/assets/element-plus/icon.png" alt="" @click="act_nav('options')" />
+                    <template #title>Options</template>
+                </el-menu-item>
+                <el-menu-item index="3">
+                    <img class="icon" src="/assets/element-plus/icon.png" alt="" @click="act_code_refresh" />
+                    <template #title>Refresh</template>
+                </el-menu-item>
+                <el-sub-menu index="4">
+                    <template #title>
+                        <img class="icon" src="/assets/element-plus/icon.png" alt="" />
+                        <span>More</span>
+                    </template>
+                    <el-menu-item-group>
+                        <template #title><span>Group One</span></template>
+                        <el-menu-item index="1-1">item one</el-menu-item>
+                        <el-menu-item index="1-2">item two</el-menu-item>
+                    </el-menu-item-group>
+                    <el-menu-item-group title="Group Two">
+                        <el-menu-item index="1-3">item three</el-menu-item>
+                    </el-menu-item-group>
+                    <el-sub-menu index="1-4">
+                        <template #title><span>item four</span></template>
+                        <el-menu-item index="1-4-1">item one</el-menu-item>
+                    </el-sub-menu>
+                </el-sub-menu>
+            </el-menu>
+        </el-aside>
+        <el-main v-if="page == 'options'" class="options">
+            <wp-admin-options></wp-admin-options>
+        </el-main>
+        <el-main v-if="page == 'code'" class="code">
+            <wp-admin-code></wp-admin-code>
+        </el-main>
+    </el-container>
+
+</template>
+
+<template id="template-wp-admin-code">
+    <el-row width="100%">
         <el-col :span="14">
-            <el-table :data="tree_data" row-key="id" :tree-props="{ children: 'children' }" :default-sort="{ prop: 'id', order: 'descending' }">
+            <el-table :data="$store.tree_data" row-key="id" :tree-props="{ children: 'children' }" :default-sort="{ prop: 'id', order: 'descending' }">
                 <el-table-column prop="label" label="name" sortable width="120">
                     <template #default="{ row }">
                         <b>{{ row.name}}</b>
-                        <hr/>
+                        <hr />
                         <div>{{ row.label }}</div>
-                        <hr/>
+                        <hr />
                         <el-button type="primary" @click="act_code_update(row)">EDIT</el-button>
                     </template>
                 </el-table-column>
@@ -42,7 +82,7 @@ $rest_api_nonce = wp_create_nonce('wp_rest');
                 <el-table-column prop="id" label="update" sortable width="120">
                     <template #default="{ row }">
                         <el-button type="primary" @click="act_code_update(row)">EDIT</el-button>
-                        <hr/>
+                        <hr />
                         <el-button type="danger" @click="act_code_delete(row)">DELETE</el-button>
                     </template>
                 </el-table-column>
@@ -52,38 +92,36 @@ $rest_api_nonce = wp_create_nonce('wp_rest');
         <el-col :span="8" class="bg-200 pd-1">
             <em>Add a new code</em>
             <hr />
-            <el-form :inline="false" :model="formInline" label-width="60px" class="demo-form-inline">
+            <el-form :inline="false" :model="$store.formInline" label-width="60px" class="demo-form-inline">
                 <el-form-item label="title">
-                    <el-input v-model="formInline.label" name="edit_label" placeholder="title" clearable />
+                    <el-input v-model="$store.formInline.label" name="edit_label" placeholder="title" clearable />
                 </el-form-item>
                 <el-form-item label="name">
-                    <el-input v-model="formInline.name" name="edit_name" placeholder="name" clearable />
+                    <el-input v-model="$store.formInline.name" name="edit_name" placeholder="name" clearable />
                 </el-form-item>
                 <el-form-item label="code">
-                    <el-input v-model="formInline.code" type="textarea" name="edit_code" :autosize="{ minRows: 5, maxRows: 50 }" placeholder="code" clearable />
+                    <el-input v-model="$store.formInline.code" type="textarea" name="edit_code" :autosize="{ minRows: 5, maxRows: 50 }" placeholder="code" clearable />
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click.prevent="act_code_create">SAVE</el-button>
                 </el-form-item>
             </el-form>
             <hr />
-            <el-tree :data="tree_data" show-checkbox draggable></el-tree>
-            <el-calendar v-model="cal_date"></el-calendar>
-            <el-tree :data="tree_data" show-checkbox draggable></el-tree>
+            <el-tree :data="$store.tree_data" show-checkbox draggable></el-tree>
+            <el-calendar v-model="$store.cal_date"></el-calendar>
+            <el-tree :data="$store.tree_data" show-checkbox draggable></el-tree>
         </el-col>
-        <el-col :span="2">
-            <el-button type="success" @click.prevent="act_code_refresh">Refresh</el-button>
-        </el-col>
-    </el-row>
-    <hr />
-</template>
+    </el-row></template>
 
 <!-- import map -->
 <script type="importmap">
     {
         "imports": {
             "vue": "/assets/vue-esm-prod-334.js",
-            "element-plus": "/assets/element-plus/index-min.mjs"
+            "element-plus": "/assets/element-plus/index-min.mjs",
+            "wp-admin": "/assets/wp/wp-admin.js",
+            "wp-admin-code": "/assets/wp/wp-admin-code.js",
+            "wp-admin-options": "/assets/wp/wp-admin-options.js"
         }
     }
 </script>
@@ -91,115 +129,44 @@ $rest_api_nonce = wp_create_nonce('wp_rest');
     import {
         createApp
     } from 'vue';
+
     import ElementPlus from 'element-plus';
+    import wp_admin from 'wp-admin';
+
+    // store the async components
+    wp_admin.store.async_components = ["wp-admin-code", "wp-admin-options"];
+    // store the api config from PHP to JS
+    wp_admin.store.api_rest_uri = "<?php echo $uri_rest_api; ?>";
+    wp_admin.store.api_nonce = "<?php echo $rest_api_nonce; ?>";
+    wp_admin.store.api_user = "<?php echo $user_login; ?>";
+    wp_admin.store.api_password = "";
 
     let data = {
-        api_nonce: "<?php echo $rest_api_nonce; ?>",
-        api_user: "<?php echo $user_login; ?>",
-        api_password: "",
-        uri_rest_api: "<?php echo $uri_rest_api; ?>",
+        page: "code",
+        isCollapse: true,
         message: "hello Vue",
-        cal_date: new Date(),
-        tree_data: [{
-                id: 1,
-                label: 'Level one 1',
-                children: [{
-                        id: 4,
-                        label: 'Level two 1-1',
-                    },
-                    {
-                        id: 5,
-                        label: 'Level two 1-2',
-                    },
-                ]
-            },
-            {
-                id: 2,
-                label: 'Level one 2',
-            },
-        ],
-        formInline: {
-            label: '',
-            name: '',
-            code: '',
-        }
     };
 
-
     let methods = {
-        async send_fetch(fd) {
-            // make POST request
-            let headers = new Headers();
-            // add nonce
-            if (this.api_nonce) {
-                headers.append('X-WP-Nonce', this.api_nonce);
-            }
-            if (this.api_user && this.api_password) {
-                headers.append('Authorization', 'Basic ' + btoa(this.api_user + ':' + this.api_password));
-            }
-            let res = await fetch(this.uri_rest_api, {
-                method: "POST",
-                body: fd,
-                // enable cors and credentials
-                // mode: "cors",
-                // credentials: "include",
-                headers,
-            });
-            let json = await res.json();
-            console.log(json);
-            return json;
+        act_nav(page) {
+            console.log("act_nav", page);
+            this.page = page;
         },
-        async load_data() {
-            let fd = new FormData();
-            fd.append("@class", "code");
-            fd.append("@method", "load_data");
-            return await this.send_fetch(fd);
+        handleOpen(key, keyPath) {
+            console.log(key, keyPath)
         },
-        act_code_delete: async function(row) {
-            console.log("act_code_delete", row);
-            // make POST request
-            let fd = new FormData();
-            fd.append("@class", "code");
-            fd.append("@method", "delete");
-            fd.append("id", row.id);
-            let json = await this.send_fetch(fd);
-            // if json.code_load_data is defined then copy to tree_data
-            if (json.code_delete) {
-                this.tree_data = json.code_delete;
-            }
-        },
-        act_code_update: async function(row) {
-            // copy row to formInline
-            this.formInline = Object.assign({}, row);
-        },
-        act_code_create: async function(event) {
-            console.log("act_code_create", event);
-            // build form data from formInline
-            let fd = new FormData();
-            fd.append("@class", "code");
-            fd.append("@method", "create");
-            // warning: label is used by element-plus for trees
-            fd.append("title", this.formInline.label);
-            fd.append("name", this.formInline.name);
-            // add code as file named code.php
-            let blob = new Blob([this.formInline.code], {
-                type: "text/plain"
-            });
-            fd.append("code", blob, "code.php");
-            // make POST request with cors enabled and credentials
-            let json = await this.send_fetch(fd);
-            // if json.code_load_data is defined then copy to tree_data
-            if (json.code_create) {
-                this.tree_data = json.code_create;
-            }
-
+        handleClose(key, keyPath) {
+            console.log(key, keyPath)
         },
         act_code_refresh: async function() {
             // load code from api
-            let json = await this.load_data();
+            let fd = new FormData();
+            fd.append("@class", "code");
+            fd.append("@method", "load_data");
+            let json = await this.$send_fetch(fd);
             // if json.code_load_data is defined then copy to tree_data
             if (json.code_load_data) {
-                this.tree_data = json.code_load_data;
+                this.$store.tree_data = json.code_load_data;
             }
         }
     }
@@ -216,23 +183,20 @@ $rest_api_nonce = wp_create_nonce('wp_rest');
             link.type = 'text/css';
             link.href = '/assets/element-plus/index-min.css';
             document.head.appendChild(link);
-
-            // load code from api
-            let json = await this.load_data();
-            // if json.code_load_data is defined then copy to tree_data
-            if (json.code_load_data) {
-                this.tree_data = json.code_load_data;
-            }
+            // load data
+            this.act_code_refresh();
         },
         methods,
     });
-    app.use(ElementPlus)
+    app.use(ElementPlus);
+    app.use(wp_admin);
     // mount the app
     app.mount("#app");
 </script>
 <style>
     /* OVERRIDE WP CSS */
-    input[type="text"], input[type="text"]:focus {
+    input[type="text"],
+    input[type="text"]:focus {
         border: none;
         box-shadow: none;
     }
@@ -241,10 +205,25 @@ $rest_api_nonce = wp_create_nonce('wp_rest');
         width: 100%;
         height: 100%;
     }
+
     .bg-200 {
         background-color: #ccc;
     }
+
     .pd-1 {
         padding: 1rem;
+    }
+
+    .icon {
+        width: 16px;
+        height: 16px;
+    }
+
+    .code {
+        background-color: #ccc;
+    }
+
+    .w100 {
+        width: 100%;
     }
 </style>
