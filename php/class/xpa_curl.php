@@ -130,11 +130,16 @@ class xpa_curl
                             if (count($rows) == 0) {
                                 // in li find tag with attribute datetime
                                 $time = $li->getElementsByTagName("time")[0];
-                                $datetime = $time->getAttribute("datetime");
-                                // convert datetime to timestamp
-                                $timestamp = strtotime($datetime);
-                                $created = date("Y-m-d H:i:s", $timestamp);
-
+                                if($time) {                                
+                                    $datetime = $time->getAttribute("datetime");
+                                    // convert datetime to timestamp
+                                    $timestamp = strtotime($datetime);
+                                    $created = date("Y-m-d H:i:s", $timestamp);
+                                }
+                                else {
+                                    // default to now
+                                    $created = date("Y-m-d H:i:s");
+                                }
                                 // insert a line in db gaia.geocms
                                 $row = [
                                     "path" => "job",

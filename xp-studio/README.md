@@ -15,6 +15,12 @@ wp-env destroy
 
 ```
 
+The folder contains code as a WP plugin, named `xp-studio`.
+There's a docker mount to include `gaia` code inside the WP plugin.
+
+The plugin `xp-studio` also stores PHP code in DB, in post_type `xps-code`.
+Cache files are created to export activated PHP code from DB to files.
+
 
 ### CODE WITH PHP TO REGISTER A BLOCK
 

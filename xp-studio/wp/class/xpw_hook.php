@@ -117,7 +117,7 @@ class xpw_hook
 
             // check if user and password are valid
             $user = wp_authenticate($user, $pass);
-            if ($user->ID ?? false) {
+            if (!is_wp_error($user)) {
                 // set current user
                 wp_set_current_user($user);
             }

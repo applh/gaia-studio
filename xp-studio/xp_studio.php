@@ -1,6 +1,7 @@
 <?php
 /**
  * Plugin Name: XP Studio
+ * Description: XP Studio adds powerful Code Management System features to WP. (AI = Content MS * Code MS)
  */
 
 class xp_studio
@@ -9,24 +10,104 @@ class xp_studio
     static $uri_rest_api = "/wp-json/xp-studio/v1/api";
     static $cache_duration = 86400; // in seconds
 
+    static $autoloaders = [
+        "wp" => "xp_studio::autoload_wp",
+        "gaia" => "xp_studio::autoload_gaia",
+//        "cache" => "xp_studio::autoload_cache_code",
+//        "db" => "xp_studio::autoload_db_code",
+    ];
+
     static function start()
     {
         // add autoloader
-        spl_autoload_register("xp_studio::autoload");
+        spl_autoload_register("xp_studio::autoload_router");
 
         add_action("init", "xp_studio::init");
 
         if (is_admin()) {
             xpw_admin::setup_admin();
         }
+        else {
+            xp_studio::setup_front();
+        }
     }
 
-    static function autoload ($classname) {
+    static function setup_front ()
+    {
+        // get config file from data folder
+        $path_data = xp_studio::path_data();
+        $path_config = "$path_data/config.php";
+        if (file_exists($path_config)) {
+            // include the config file
+            include $path_config;
+        }
+        else {
+            // create the config file
+            $now = date("Y-m-d H:i:s");
+            $code = <<<CODE
+            <?php
+            /**
+             * created: $now
+             * Description: Note: This folder is used as a data folder for xp-studio plugin
+             */
+            CODE;
+
+            file_put_contents($path_config, $code);
+        }
+
+        xp_studio::over_host();
+    }
+
+    static function over_host ()
+    {
+        // check hosts to ovverride WP
+        $host = $_SERVER['SERVER_NAME'];
+        $wp_hosts = xpa_os::kv("wp/hosts") ?? [];
+        // debug header
+        header("X-XP-Studio-Host: $host");
+        $host_route = $wp_hosts[$host] ?? false;
+        if ($host_route) {
+            // check if is_callable
+            if (is_callable($host_route)) {
+                $host_route();
+            }
+            // WARNING: STOP WP HERE
+            die();
+        }
+
+    }
+
+    static function autoload_router ($classname)
+    {
+        // loop on autoloaders
+        foreach (xp_studio::$autoloaders as $name => $autoloader) {
+            if (is_callable($autoloader)) {
+                $found = $autoloader($classname);
+                if ($found) {
+                    return true;
+                }
+            }
+        }
+    }
+
+    static function autoload_wp ($classname) {
         // check if file exists in wp/class/$classname.php
         $path = __DIR__ . "/wp/class/$classname.php";
         if (file_exists($path)) {
             include $path;
+            $found = true;
         }
+        return $found ?? false;
+    }
+
+    static function autoload_gaia ($classname) {
+        // check if file exists in wp/class/$classname.php
+        $path = __DIR__ . "/php/class/$classname.php";
+        if (file_exists($path)) {
+            include $path;
+            $found = true;
+        }
+        return $found ?? false;
     }
 
     static function init ()
@@ -206,8 +287,15 @@ class xp_studio
     {
         // set the path data for gaia to another plugon folder xp-data
         $path_data = __DIR__ . "/../xp-data";
-        // check if exists
-        if (!file_exists($path_data)) {
+
+        // check there's a folder with prefix xp-data
+        $found = glob("$path_data-*");
+        if (empty($found)) {
+            // add a random md5 hash as suffix to avoid conflict and hide the folder
+            $md5 = md5(password_hash(uniqid(), PASSWORD_DEFAULT));
+            $path_data .= "-$md5";
+            // get now
+            $now = date("Y-m-d H:i:s");
             // create the folder
             mkdir($path_data);
             // add index.php
@@ -215,11 +303,16 @@ class xp_studio
             <?php
             /**
              * Plugin Name: XP Data
+             * created: $now
+             * Description: Note: This folder is used as a data folder for xp-studio plugin
              * /
  
             CODE;
 
             file_put_contents($path_data . "/index.php",$code);
+        }
+        else {
+            $path_data = $found[0];
         }
         $path_data = realpath($path_data);
         return $path_data;

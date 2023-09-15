@@ -17,10 +17,10 @@ $rest_api_nonce = wp_create_nonce('wp_rest');
 <template id="template-app">
     <h1>XP Studio</h1>
     <hr />
-    <input v-model="api_nonce" type="text" placeholder="nonce" />
+    <input v-model="api_nonce" type="text" name="api_nonce" placeholder="nonce" />
     <el-button type="success" @click.prevent="act_code_refresh">Refresh</el-button>
-    <input v-model="api_user" type="text" placeholder="user" />
-    <input v-model="api_password" type="password" placeholder="application password" />
+    <input v-model="api_user" type="text" name="api_user" placeholder="user" />
+    <input v-model="api_password" type="password" name="api_password" placeholder="application password" autocomplete="new-password" />
     <hr />
     <el-row>
         <el-col :span="14">
@@ -36,7 +36,7 @@ $rest_api_nonce = wp_create_nonce('wp_rest');
                 </el-table-column>
                 <el-table-column prop="code" label="code" sortable width="640">
                     <template #default="{ row }">
-                        <textarea v-model="row.code" rows="10"></textarea>
+                        <textarea v-model="row.code" name="row_code" rows="10"></textarea>
                     </template>
                 </el-table-column>
                 <el-table-column prop="id" label="update" sortable width="120">
@@ -54,13 +54,13 @@ $rest_api_nonce = wp_create_nonce('wp_rest');
             <hr />
             <el-form :inline="false" :model="formInline" label-width="60px" class="demo-form-inline">
                 <el-form-item label="title">
-                    <el-input v-model="formInline.label" placeholder="title" clearable />
+                    <el-input v-model="formInline.label" name="edit_label" placeholder="title" clearable />
                 </el-form-item>
                 <el-form-item label="name">
-                    <el-input v-model="formInline.name" placeholder="name" clearable />
+                    <el-input v-model="formInline.name" name="edit_name" placeholder="name" clearable />
                 </el-form-item>
                 <el-form-item label="code">
-                    <el-input v-model="formInline.code" type="textarea" :autosize="{ minRows: 5, maxRows: 50 }" placeholder="code" clearable />
+                    <el-input v-model="formInline.code" type="textarea" name="edit_code" :autosize="{ minRows: 5, maxRows: 50 }" placeholder="code" clearable />
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click.prevent="act_code_create">SAVE</el-button>
@@ -141,8 +141,8 @@ $rest_api_nonce = wp_create_nonce('wp_rest');
                 method: "POST",
                 body: fd,
                 // enable cors and credentials
-                mode: "cors",
-                credentials: "include",
+                // mode: "cors",
+                // credentials: "include",
                 headers,
             });
             let json = await res.json();
@@ -232,7 +232,7 @@ $rest_api_nonce = wp_create_nonce('wp_rest');
 </script>
 <style>
     /* OVERRIDE WP CSS */
-    input[type="text"] {
+    input[type="text"], input[type="text"]:focus {
         border: none;
         box-shadow: none;
     }

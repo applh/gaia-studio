@@ -2,12 +2,12 @@
 
 class xpa_dev
 {
-    static function code ($classname)
+    static function code ($classname, $target_dir=null)
     {
         if (!class_exists($classname)) {
             // create a new class from callback
             $path_root = xpa_os::kv("root");
-            $path_class = $path_root . "/class";
+            $path_class = $target_dir ?? ($path_root . "/class");
 
             $src_code = static::code_class($classname);
 
