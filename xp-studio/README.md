@@ -1,5 +1,16 @@
 # XP-STUDIO
 
+In the 20th century, there was a famous equation: E = mC². 
+
+In the 21st century, there is a new equation: AI = [CMS]².
+
+* Artificial Intelligence
+  * is a program that can learn from data
+  * is a program that can improve its own code
+  * AI = (Content Management System) * (Code Mixer Studio)
+* Content Managament System
+* Code Mixer Studio
+
 ## CODE ORGANISATION
 
 This folder should be used with wp-env

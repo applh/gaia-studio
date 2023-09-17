@@ -173,9 +173,11 @@ class xpw_hook
     static function template_include ($template) {
         if (is_singular('xps-block')) {
             $new_template = xp_studio::$path_studio . '/wp/editor/xps-block.php';
-            if ('' != $new_template) {
-                return $new_template;
-            }
+            return $new_template;
+        }
+        else if (is_singular('xps-code')) {
+            $new_template = xp_studio::$path_studio . '/wp/editor/xps-code.php';
+            return $new_template;
         }
         return $template;
     }
