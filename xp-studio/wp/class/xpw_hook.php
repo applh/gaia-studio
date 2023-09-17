@@ -14,6 +14,18 @@ class xpw_hook
 {
     //#class_start
 
+    static function activation ()
+    {
+        // flush rewrite rules
+        flush_rewrite_rules();
+    }
+
+    static function deactivation ()
+    {
+        // flush rewrite rules
+        flush_rewrite_rules();
+    }
+
     static function template_redirect()
     {
         // check if is 404
@@ -157,6 +169,17 @@ class xpw_hook
             "cookies" => $_COOKIE,
         ]);
     }
+
+    static function template_include ($template) {
+        if (is_singular('xps-block')) {
+            $new_template = xp_studio::$path_studio . '/wp/editor/xps-block.php';
+            if ('' != $new_template) {
+                return $new_template;
+            }
+        }
+        return $template;
+    }
+
     //#class_end
 }
 

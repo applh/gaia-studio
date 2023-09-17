@@ -20,11 +20,17 @@ class xp_studio
 
     static function start()
     {
-        // add autoloader
+        // add autoloaders
         spl_autoload_register("xp_studio::autoload_router");
 
+        // activation / deactivation hooks
+        register_activation_hook(__FILE__, "xpw_hook::activation");
+        register_deactivation_hook(__FILE__, "xpw_hook::deactivation");
+
+        // common init
         add_action("init", "xp_studio::init");
 
+        // admin or front init
         if (is_admin()) {
             xpw_admin::setup_admin();
         } else {
@@ -162,10 +168,15 @@ class xp_studio
         //     )
         // );
 
-        xp_studio::register_blocks();
 
         // register post types
         xp_studio::register_post_types();
+        
+        // register blocks after post types as blocks can be defined as 'xps-block'
+        xp_studio::register_blocks();
+        // hook template for xps-blocks
+        add_filter('template_include', 'xpw_hook::template_include');
+
     }
 
     static function register_post_types()
@@ -175,7 +186,7 @@ class xp_studio
 
         // TODO: excerpt is used as code, should use another field ?!
         register_post_type("xps-code", [
-            "label" => "Code",
+            "label" => "XP Codes",
             "public" => true,
             "hierarchical" => true,
             "show_in_rest" => true,
@@ -192,7 +203,24 @@ class xp_studio
         // spl_autoload_register("xp_studio::autoload_cache_code");
         // spl_autoload_register("xp_studio::autoload_db_code");
         xp_studio::$autoloaders["db"] = "xp_studio::autoload_db_code";
+
+        // register post type xps-blocks
+        register_post_type("xps-block", [
+            "label" => "XP Blocks",
+            "public" => true,
+            "hierarchical" => true,
+            "show_in_rest" => true,
+            "menu_icon" => "dashicons-editor-code",
+            "supports" => ["title", "editor", "author", "thumbnail", "excerpt", "custom-fields", "revisions", "page-attributes", "post-formats"],
+            "can_export" => true,
+        ]);
+        // add category and tag support
+        register_taxonomy_for_object_type('category', 'xps-blocks');
+        register_taxonomy_for_object_type('post_tag', 'xps-blocks');
+
+        flush_rewrite_rules();
     }
+
 
     static function autoload_cache_code($classname)
     {
@@ -327,6 +355,7 @@ class xp_studio
     static function register_blocks()
     {
         // register blocks
+        // TODO: loop with glob on /wp/block-*/register.php
         include __DIR__ . '/wp/block-basic/register.php';
         include __DIR__ . '/wp/block-form/register.php';
         include __DIR__ . '/wp/block-form-ui/register.php';
@@ -347,6 +376,38 @@ class xp_studio
             register_block_type_from_metadata(
                 dirname($block),
             );
+        }
+
+        // register dynalic blocks from xps-blocks post type
+        $xps_blocks = get_posts([
+            "post_type" => "xps-block",
+            "post_status" => "publish",
+            "posts_per_page" => -1,
+        ]);
+        // loop on blocks
+        foreach ($xps_blocks as $xps_block) {
+            // get the block name
+            $block_name = $xps_block->post_name;
+            $block_title = $xps_block->post_title;
+            wp_register_script(
+                "xps-block-$block_name",
+                //plugins_url('block-js.php', xp_studio::$path_studio . "/wp/editor/block-js.php"),
+                // plugins_url("wp/editor/block-js.php?bn=$block_name&bt=$block_title", __FILE__),
+                "/xps-block/$block_name",
+                ['wp-blocks', 'wp-element', 'wp-polyfill'],
+                '0.2'
+            );
+            
+            // register the block
+            register_block_type("xps-block/$block_name", [
+                "api_version" => 3,
+                "name" => "xps-block/$block_name",
+                "title" => $block_title, // $xps_block->post_title,
+                "icon" => "smiley",
+                "category" => "text",
+                "editor_script_handles" => [ "xps-block-$block_name" ],
+                "render_callback" => "xpw_block::render_callback",
+            ]);
         }
     }
 }
