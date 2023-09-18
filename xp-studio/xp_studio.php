@@ -20,6 +20,10 @@ class xp_studio
 
     static function start()
     {
+        // performance tips:
+        // keep in this file mandatory code
+        // delegate in other classes optional code (hooks, filters, etc)
+
         // add autoloaders
         spl_autoload_register("xp_studio::autoload_router");
 
@@ -379,6 +383,9 @@ class xp_studio
         }
 
         // register dynalic blocks from xps-blocks post type
+        // performance impact: about 2ms
+        // TODO: save in cache files
+        // $time0 = microtime(true);
         $xps_blocks = get_posts([
             "post_type" => "xps-block",
             "post_status" => "publish",
@@ -394,7 +401,9 @@ class xp_studio
                 //plugins_url('block-js.php', xp_studio::$path_studio . "/wp/editor/block-js.php"),
                 // plugins_url("wp/editor/block-js.php?bn=$block_name&bt=$block_title", __FILE__),
                 "/xps-block/$block_name",
-                ['wp-blocks', 'wp-element', 'wp-polyfill'],
+                // ['wp-blocks', 'wp-element', 'wp-polyfill', 'xp-editor' ],
+                // WARNING: 'xp-editor' must be loaded before
+                ['wp-blocks', 'wp-element', 'wp-polyfill', 'xp-editor'],
                 '0.2'
             );
             
@@ -408,7 +417,24 @@ class xp_studio
                 "editor_script_handles" => [ "xps-block-$block_name" ],
                 "render_callback" => "xpw_block::render_callback",
             ]);
+
+            // add to allowed blocks
+            xpw_block::$allowed[] = "xps-block/$block_name";
         }
+        // $time1 = microtime(true);
+        // $diff = $time1 - $time0;
+        // // get diff in ms
+        // $diff = round($diff * 1000);
+        // // debug
+        // header("X-XP-Studio-Register-Blocks: $diff ms");
+
+        // https://developer.wordpress.org/reference/hooks/allowed_block_types_all/
+        add_filter( "allowed_block_types_all", "xpw_hook::allowed_block_types_all", 10, 2);
+
+        // https://developer.wordpress.org/block-editor/how-to-guides/javascript/loading-javascript/
+        // enqueue_block_editor_assets
+        add_action("enqueue_block_editor_assets", "xpw_hook::enqueue_block_editor_assets");
+
     }
 }
 

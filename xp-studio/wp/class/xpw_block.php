@@ -14,10 +14,18 @@ class xpw_block
 {
     //#class_start
 
-    static function render_callback ()
+    static $allowed = [];
+    
+    static function render_callback ($attrs, $content, $block)
     {
+        // block context could be used to get parent attributes, etc...
+        // https://developer.wordpress.org/block-editor/reference-guides/block-api/block-context/
+
         header(("X-Xpw-Block: " . $_SERVER["REQUEST_URI"]));
-        return date("Y-m-d H:i:s");
+        $now = date("Y-m-d H:i:s");
+        return
+        "<div>$now</div>" 
+        .$content;
     }
 
     //#class_end

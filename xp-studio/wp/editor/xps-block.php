@@ -1,6 +1,7 @@
 <?php
 header('Content-Type: application/javascript');
-$block_name = "xps-block/" . $post->post_name;
+$block_shortname = $post->post_name;
+$block_name = "xps-block/$block_shortname";
 $block_title = $post->post_title;
 
 // get infos on block type from registry
@@ -19,8 +20,7 @@ console.log('xps-block.php', '<?php echo $block_name ?>', '<?php echo $block_tit
 
     const scriptUrl = document.currentScript.src;
     console.log('current url', scriptUrl);
-
-
+        
     // warning: block name must be unique and the same as block name in block.json
     // namespace/block-name (lowercase and not weird characters...)
     blocks.registerBlockType( '<?php echo $block_name ?>', {
@@ -28,7 +28,7 @@ console.log('xps-block.php', '<?php echo $block_name ?>', '<?php echo $block_tit
         edit: function (props) {
             // will let WP add selection and toolbar on block in editor
             let bps = window.wp.blockEditor.useBlockProps({
-                className: 'block-basic ' + (props.attributes.className ?? ''),
+                className: '<?php echo $block_shortname ?>' + (props.attributes.className ?? ''),
             });
 
             // WANING: will be called for each refresh and block in editor
@@ -39,12 +39,18 @@ console.log('xps-block.php', '<?php echo $block_name ?>', '<?php echo $block_tit
             
             })();
 
-            return el( 'p', bps, '<?php echo $block_title ?>' );
+            // add inner blocks
+            // let innerBlocks = wp.blockEditor.InnerBlocks;
+            let ib = el( wp.blockEditor.InnerBlocks );
+
+            return el( 'div', bps, '<?php echo $block_title ?>', ib );
         },
         // WARNING: can't be async
         save: function (props) {
             let saved = wp.blockEditor.useBlockProps.save();
-            return el( 'p', saved, '<?php echo $block_title ?>' );
+            // save inner blocks
+            let ib = el( wp.blockEditor.InnerBlocks.Content );
+            return el( 'div', saved, '<?php echo $block_title ?>', ib );
         },
     } );
 
