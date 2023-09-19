@@ -161,18 +161,6 @@ class xp_studio
             return $res;
         });
 
-        // https://github.com/WordPress/gutenberg-examples/blob/trunk/blocks-jsx/meta-block/index.php
-        // register_post_meta(
-        //     'post',
-        //     'myguten_meta_block_field',
-        //     array(
-        //         'show_in_rest' => true,
-        //         'single'       => true,
-        //         'type'         => 'string',
-        //     )
-        // );
-
-
         // register post types
         xp_studio::register_post_types();
         
@@ -187,16 +175,23 @@ class xp_studio
     {
         // register post type code
         // https://developer.wordpress.org/reference/functions/register_post_type/
-
-        // TODO: excerpt is used as code, should use another field ?!
-        register_post_type("xps-code", [
-            "label" => "XP Codes",
+        // https://developer.wordpress.org/reference/functions/register_post_type/
+        $common_options = [
             "public" => true,
             "hierarchical" => true,
             "show_in_rest" => true,
             "menu_icon" => "dashicons-editor-code",
             "supports" => ["title", "editor", "author", "thumbnail", "excerpt", "custom-fields", "revisions", "page-attributes", "post-formats"],
             "can_export" => true,
+            "show_ui" => true,
+            "show_in_menu" => "plugins.php",
+            // WARNING: will call callback with only 1 parameter ($post)
+            "register_meta_box_cb" => "xpw_admin::meta_box_cb_post_type",
+        ];
+
+        // TODO: excerpt is used as code, should use another field ?!
+        register_post_type("xps-code", $common_options + [
+            "label" => "XP Codes",
         ]);
         // add category and tag support
         register_taxonomy_for_object_type('category', 'xps-code');
@@ -208,20 +203,38 @@ class xp_studio
         // spl_autoload_register("xp_studio::autoload_db_code");
         xp_studio::$autoloaders["db"] = "xp_studio::autoload_db_code";
 
-        // register post type xps-blocks
-        register_post_type("xps-block", [
+        // register post type xps-block
+        register_post_type("xps-block", $common_options + [
             "label" => "XP Blocks",
-            "public" => true,
-            "hierarchical" => true,
-            "show_in_rest" => true,
-            "menu_icon" => "dashicons-editor-code",
-            "supports" => ["title", "editor", "author", "thumbnail", "excerpt", "custom-fields", "revisions", "page-attributes", "post-formats"],
-            "can_export" => true,
         ]);
         // add category and tag support
         register_taxonomy_for_object_type('category', 'xps-blocks');
         register_taxonomy_for_object_type('post_tag', 'xps-blocks');
 
+        // register post type xps-table
+        register_post_type("xps-table", $common_options + [
+            "label" => "XP Tables",
+        ]);
+
+        // register post type xps-form
+        register_post_type("xps-form", $common_options + [
+            "label" => "XP Forms",
+        ]);
+
+        // and a post type for... post-types ?? 
+        // (xps-post-type... Inception...)
+
+
+        // register post meta
+        // https://developer.wordpress.org/reference/functions/register_post_meta/
+        register_post_meta("", "xps-meta", [
+            "show_in_rest" => true,
+            "single" => true,
+            "type" => "string",
+            "default" => date("Y-m-d H:i:s"),
+        ]);
+
+        // update permalinks
         flush_rewrite_rules();
     }
 
@@ -427,13 +440,6 @@ class xp_studio
         // $diff = round($diff * 1000);
         // // debug
         // header("X-XP-Studio-Register-Blocks: $diff ms");
-
-        // https://developer.wordpress.org/reference/hooks/allowed_block_types_all/
-        add_filter( "allowed_block_types_all", "xpw_hook::allowed_block_types_all", 10, 2);
-
-        // https://developer.wordpress.org/block-editor/how-to-guides/javascript/loading-javascript/
-        // enqueue_block_editor_assets
-        add_action("enqueue_block_editor_assets", "xpw_hook::enqueue_block_editor_assets");
 
     }
 }

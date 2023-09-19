@@ -182,29 +182,6 @@ class xpw_hook
         return $template;
     }
 
-    static function allowed_block_types_all ($allowed_blocks, $editor_context)
-    {   
-        if ($editor_context->post->post_type == "xps-block") {
-            // add script only if post type is xps-block
-            wp_enqueue_script('xp-editor-xps-block',
-                plugins_url('/wp/editor/xp-editor-xps-block.js', xp_studio::$path_studio . "/wp"),
-                [ 'xp-editor' ]
-            );
-            return xpw_block::$allowed;
-        }
-
-        return $allowed_blocks;
-
-    }
-
-    static function enqueue_block_editor_assets ()
-    {
-        // load block editor extra script
-        wp_enqueue_script('xp-editor',
-            plugins_url('/wp/editor/xp-editor.js', xp_studio::$path_studio . "/wp"),
-        );
-    }
-
     //#class_end
 }
 
