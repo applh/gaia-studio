@@ -102,6 +102,10 @@ class xpw_admin
 
     static function meta_box_cb ($post_type, $post=null)
     {
+        // check if $post_type starts with xps-
+        if (substr($post_type, 0, 4) != "xps-") {
+            return;
+        }
         // TODO: add option to choose post types using the meta box
         // https://developer.wordpress.org/reference/functions/add_meta_box/
         add_meta_box(
@@ -117,6 +121,11 @@ class xpw_admin
     // meta_box_cb_post_type
     static function meta_box_cb_post_type ($post)
     {
+        // check if $post_type starts with xps-
+        if (substr($post->post_type, 0, 4) != "xps-") {
+            return;
+        }
+
         // TODO: add option to choose post types using the meta box
         // https://developer.wordpress.org/reference/functions/add_meta_box/
         add_meta_box(

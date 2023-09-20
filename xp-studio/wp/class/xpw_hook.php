@@ -26,8 +26,107 @@ class xpw_hook
         flush_rewrite_rules();
     }
 
+    static function cache_start ()
+    {
+        
+        // no cache if $_GET is not empty
+        if (!empty($_GET)) {
+            xp_studio::$cache_active = false;
+        }
+        $user = wp_get_current_user();
+        if ($user->ID ?? false) {
+            // no cache if user is logged in
+            xp_studio::$cache_active = false;
+        }
+
+        // if cache active then start cache
+        if (xp_studio::$cache_active) {
+            // TODO: maybe send cache content ealier
+            xpw_hook::cache();
+            // start cache
+            ob_start();
+        }
+
+    }
+
+    static function cache ($cache = null)
+    {
+        // save cache
+        $uri = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
+        // save cache
+        // file_put_contents($path, $cache);
+        $path_data = xp_studio::path_data();
+        // save the code in a file $path_data/class/$classname.php
+        // check if folder exists
+        $path = "$path_data/tmp";
+        if (!file_exists($path)) {
+            mkdir($path);
+        }
+        // $classname could have namespace
+        // so easier to hash md5 to get a unique filename
+        $hash = md5($uri);
+        $path = "$path/cache-$hash.php";
+        if ($cache == null) {
+            // read cache if exists
+            if (file_exists($path)) {
+                // check if cache ttl is valid
+                $mtime = filemtime($path);
+                $ttl = $mtime + xp_studio::$cache_duration - time();
+                if ($ttl > 0) {                
+                    $cache = file_get_contents($path);
+                    // debug header
+                    header('X-Xps-Cache-Uri: ' . $uri);
+                    header('X-Xps-Cache-Path: ' . $path);
+                    header('X-Xps-Cache-TTL: ' . $ttl);
+                    echo $cache;
+                    die();    
+                }
+                else {
+                    // cache is expired
+                    // delete cache
+                    unlink($path);
+                }
+            }
+        }
+        else {
+            // save cache
+            file_put_contents($path, $cache);
+        }
+
+    }
+
+    static function cache_end ($template)
+    {
+        // if cache active then end cache
+        if (xp_studio::$cache_active) {
+            if ($template) {
+                // include template
+                include $template;
+            }
+            // get cache
+            $cache = ob_get_clean();
+            if ($cache) {
+                xpw_hook::cache($cache);
+
+                // deactivate template for WP
+                $path_template_empty = xp_studio::$path_studio . "/wp/editor/template-empty.php";
+                $template = $path_template_empty;
+                echo $cache;
+            }
+        }
+
+        return $template;
+    }
+
     static function template_redirect()
     {
+        // NOTE:
+        // hook template_redirect is called at the beginnging of template-loader.php
+        // then hook template_include is called at the end of template-loader.php
+
+        // cache activation
+        xpw_hook::cache_start();
+
         // check if is 404
         if (is_404()) {
             // MAKE A SIMPLE BRIDGE TO GAIA
@@ -49,6 +148,24 @@ class xpw_hook
                 xpw_hook::run_code();
             }
         }
+    }
+
+    static function template_include ($template) 
+    {
+        // NOTE:
+        // hook template_redirect is called at the beginnging of template-loader.php
+        // then hook template_include is called at the end of template-loader.php
+        if (is_singular('xps-block')) {
+            $new_template = xp_studio::$path_studio . '/wp/editor/xps-block.php';
+            return $new_template;
+        }
+        else if (is_singular('xps-code')) {
+            $new_template = xp_studio::$path_studio . '/wp/editor/xps-code.php';
+            return $new_template;
+        }
+        $template = xpw_hook::cache_end($template);
+
+        return $template;
     }
 
     static function run_code ()
@@ -170,17 +287,6 @@ class xpw_hook
         ]);
     }
 
-    static function template_include ($template) {
-        if (is_singular('xps-block')) {
-            $new_template = xp_studio::$path_studio . '/wp/editor/xps-block.php';
-            return $new_template;
-        }
-        else if (is_singular('xps-code')) {
-            $new_template = xp_studio::$path_studio . '/wp/editor/xps-code.php';
-            return $new_template;
-        }
-        return $template;
-    }
 
     //#class_end
 }

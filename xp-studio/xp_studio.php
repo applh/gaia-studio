@@ -11,6 +11,8 @@ class xp_studio
     static $uri_rest_api = "/wp-json/xp-studio/v1/api";
     static $cache_duration = 86400; // in seconds
 
+    static $cache_active = true;
+
     static $autoloaders = [
         "wp" => "xp_studio::autoload_wp",
         "gaia" => "xp_studio::autoload_gaia",
@@ -41,6 +43,7 @@ class xp_studio
             xp_studio::setup_front();
         }
     }
+
 
     static function setup_front()
     {
@@ -211,6 +214,8 @@ class xp_studio
         register_taxonomy_for_object_type('category', 'xps-post-type');
         register_taxonomy_for_object_type('post_tag', 'xps-post-type');
 
+        // https://codex.wordpress.org/Creating_Tables_with_Plugins
+        // https://developer.wordpress.org/reference/functions/dbdelta/
         // register post type xps-table
         register_post_type("xps-table", $common_options + [
             "label" => "XP Tables",
@@ -241,6 +246,16 @@ class xp_studio
         // spl_autoload_register("xp_studio::autoload_cache_code");
         // spl_autoload_register("xp_studio::autoload_db_code");
         xp_studio::$autoloaders["db"] = "xp_studio::autoload_db_code";
+
+
+        // register a post type for... xps-api
+        register_post_type("xps-api", $common_options + [
+            "label" => "XP Apis",
+        ]);
+        // add category and tag support
+        register_taxonomy_for_object_type('category', 'xps-api');
+        register_taxonomy_for_object_type('post_tag', 'xps-api');
+
 
         // and a post type for... post-types ?? 
         // (xps-post-type... Inception...)
@@ -275,6 +290,8 @@ class xp_studio
                 register_taxonomy_for_object_type('post_tag', $post_type_name);
             }
         }
+
+        // TODO: and a post type for... xps-rest-api ??
 
         // register post meta
         // https://developer.wordpress.org/reference/functions/register_post_meta/
