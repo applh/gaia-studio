@@ -15,7 +15,7 @@ class xp_studio
         "wp" => "xp_studio::autoload_wp",
         "gaia" => "xp_studio::autoload_gaia",
         "cache" => "xp_studio::autoload_cache_code",
-//        "db" => "xp_studio::autoload_db_code",
+        //        "db" => "xp_studio::autoload_db_code",
     ];
 
     static function start()
@@ -77,14 +77,13 @@ class xp_studio
         $host_route = $wp_hosts[$host] ?? false;
         if ($host_route) {
             header("X-XP-Studio-Host-Route: $host_route");
-            
+
             // check if is_callable
             if (is_callable($host_route)) {
                 $host_route();
                 // WARNING: STOP WP HERE
                 die();
-            }
-            elseif ($wait) {
+            } elseif ($wait) {
                 header("X-XP-Studio-Host-Wait: $host_route");
                 // wait for init as may need to load code from db
                 add_action("init", "xp_studio::over_host");
@@ -163,12 +162,11 @@ class xp_studio
 
         // register post types
         xp_studio::register_post_types();
-        
+
         // register blocks after post types as blocks can be defined as 'xps-block'
         xp_studio::register_blocks();
         // hook template for xps-blocks
         add_filter('template_include', 'xpw_hook::template_include');
-
     }
 
     static function register_post_types()
@@ -189,6 +187,47 @@ class xp_studio
             "register_meta_box_cb" => "xpw_admin::meta_box_cb_post_type",
         ];
 
+        // register post type xps-form
+        register_post_type("xps-task", $common_options + [
+            "label" => "XP Tasks",
+        ]);
+        // add category and tag support
+        register_taxonomy_for_object_type('category', 'xps-task');
+        register_taxonomy_for_object_type('post_tag', 'xps-task');
+
+        // register post type xps-block
+        register_post_type("xps-block", $common_options + [
+            "label" => "XP Blocks",
+        ]);
+        // add category and tag support
+        register_taxonomy_for_object_type('category', 'xps-block');
+        register_taxonomy_for_object_type('post_tag', 'xps-block');
+
+        // register post type xps-table
+        register_post_type("xps-post-type", $common_options + [
+            "label" => "XP Post Types",
+        ]);
+        // add category and tag support
+        register_taxonomy_for_object_type('category', 'xps-post-type');
+        register_taxonomy_for_object_type('post_tag', 'xps-post-type');
+
+        // register post type xps-table
+        register_post_type("xps-table", $common_options + [
+            "label" => "XP Tables",
+        ]);
+        // add category and tag support
+        register_taxonomy_for_object_type('category', 'xps-table');
+        register_taxonomy_for_object_type('post_tag', 'xps-table');
+
+        // register post type xps-form
+        register_post_type("xps-form", $common_options + [
+            "label" => "XP Forms",
+        ]);
+        // add category and tag support
+        register_taxonomy_for_object_type('category', 'xps-form');
+        register_taxonomy_for_object_type('post_tag', 'xps-form');
+
+
         // TODO: excerpt is used as code, should use another field ?!
         register_post_type("xps-code", $common_options + [
             "label" => "XP Codes",
@@ -203,27 +242,39 @@ class xp_studio
         // spl_autoload_register("xp_studio::autoload_db_code");
         xp_studio::$autoloaders["db"] = "xp_studio::autoload_db_code";
 
-        // register post type xps-block
-        register_post_type("xps-block", $common_options + [
-            "label" => "XP Blocks",
-        ]);
-        // add category and tag support
-        register_taxonomy_for_object_type('category', 'xps-blocks');
-        register_taxonomy_for_object_type('post_tag', 'xps-blocks');
-
-        // register post type xps-table
-        register_post_type("xps-table", $common_options + [
-            "label" => "XP Tables",
-        ]);
-
-        // register post type xps-form
-        register_post_type("xps-form", $common_options + [
-            "label" => "XP Forms",
-        ]);
-
         // and a post type for... post-types ?? 
         // (xps-post-type... Inception...)
 
+        // loop on xps-post-type and register post types
+        $xps_post_types = get_posts([
+            "post_type" => "xps-post-type",
+            "post_status" => "publish",
+            "posts_per_page" => -1,
+        ]);
+        // loop on post types
+        foreach ($xps_post_types as $xps_post_type) {
+            // get the post type name
+            $post_type_name = $xps_post_type->post_name;
+            // get the post type title
+            $post_type_title = $xps_post_type->post_title;
+            // get the post type description
+            $post_type_description = $xps_post_type->post_content;
+            // get the post type options
+            // $post_type_options = json_decode($xps_post_type->post_excerpt, true);
+            $post_type_options ??= [];
+
+            // check if post type exists
+            if (!post_type_exists($post_type_name)) {
+                // register the post type
+                register_post_type($post_type_name, $common_options + [
+                    "label" => $post_type_title,
+                    "description" => $post_type_description,
+                ]);
+                // add category and tag support
+                register_taxonomy_for_object_type('category', $post_type_name);
+                register_taxonomy_for_object_type('post_tag', $post_type_name);
+            }
+        }
 
         // register post meta
         // https://developer.wordpress.org/reference/functions/register_post_meta/
@@ -419,7 +470,7 @@ class xp_studio
                 ['wp-blocks', 'wp-element', 'wp-polyfill', 'xp-editor'],
                 '0.2'
             );
-            
+
             // register the block
             register_block_type("xps-block/$block_name", [
                 "api_version" => 3,
@@ -427,7 +478,7 @@ class xp_studio
                 "title" => $block_title, // $xps_block->post_title,
                 "icon" => "smiley",
                 "category" => "text",
-                "editor_script_handles" => [ "xps-block-$block_name" ],
+                "editor_script_handles" => ["xps-block-$block_name"],
                 "render_callback" => "xpw_block::render_callback",
             ]);
 

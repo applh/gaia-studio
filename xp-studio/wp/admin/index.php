@@ -20,7 +20,7 @@ $rest_api_nonce = wp_create_nonce('wp_rest');
         <el-aside width="60px">
             <el-menu default-active="2" class="el-menu-vertical-demo" :collapse="isCollapse" @open="handleOpen" @close="handleClose">
                 <el-menu-item index="1">
-                    <img class="icon" src="/assets/element-plus/icon.png" alt="" @click="act_nav('code')" />
+                    <div @click="act_nav('code')" class="wp-menu-image dashicons-before dashicons-admin-users" aria-hidden="true"><br></div>
                     <template #title>Code</template>
                 </el-menu-item>
                 <el-menu-item index="2">
@@ -219,5 +219,12 @@ $rest_api_nonce = wp_create_nonce('wp_rest');
 
     .w100 {
         width: 100%;
+    }
+    /* COLORS */
+    .el-menu-item {
+        background-color: #666;
+    }
+    .el-menu-item:hover {
+        background-color: #aaa;
     }
 </style>
