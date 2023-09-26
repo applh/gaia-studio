@@ -3,6 +3,7 @@
 console.log('loading... xp-admin-jobs-v2.js');
 
 let data = {
+    limit: 2000,
     index_company: 3,
     level_min: -1,
     tree_data: [
@@ -29,7 +30,7 @@ let data = {
 let mounted = async function () {
     console.log('mounted xp-admin-jobs-v2.js');
     // fetch jobs from /api/jobs
-    let response = await fetch('/api/jobs');
+    let response = await fetch('/api/jobs?limit=' + this.limit);
     let response_json = await response.json();
     console.log('response', response_json);
     this.$store.jobs = response_json.jobs ?? [];

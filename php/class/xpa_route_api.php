@@ -90,6 +90,7 @@ class xpa_route_api
     {
         // get the action requested
         $action = $_REQUEST["action"] ?? "read";
+        $limit = intval($_REQUEST["limit"] ?? 1000);
 
         if ($action == "update") {
             // job is json encoded
@@ -112,7 +113,7 @@ class xpa_route_api
         }
 
         // return the updated list
-        $rows = xpa_model::read("job", order_by: "ORDER BY z DESC, created DESC", limit: 1000);
+        $rows = xpa_model::read("job", order_by: "ORDER BY z DESC, created DESC", limit: $limit);
         static::$response["jobs"] = $rows;
     }
 

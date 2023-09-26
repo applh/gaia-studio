@@ -26,6 +26,25 @@ class xp_studio
         // keep in this file mandatory code
         // delegate in other classes optional code (hooks, filters, etc)
 
+        // Performance tests (on macbook Air M1 2020):
+        // GAIA (docker+nginx+php820)
+        // api json: 16ms (1.3 Mo / with +1000 SQL rows)
+
+        // WP
+        // with wp-env server (apache+php8.0)
+        // empty.txt file: 1.8ms (outside WP)
+        // empty.php file: 2.0ms (outside WP)
+        // wp-config.php: 1.7ms (?? better than empty.php)
+        // wp plugin load: 6.9ms
+        // page empty: 32.7ms (with template cache / hook template_redirect)
+        // page empty: 44.2ms (basic WP, no template cache)
+
+        // $kill = $_REQUEST["kill"] ?? false;
+        // if ($kill) {
+        //     // kill the app
+        //     die();
+        // }
+
         // add autoloaders
         spl_autoload_register("xp_studio::autoload_router");
 
@@ -347,7 +366,7 @@ class xp_studio
     static function autoload_db_code($classname)
     {
         // debug
-        header("X-XP-Studio-DB: $classname");
+        // header("X-XP-Studio-DB: $classname");
         // WARNING: can slow down app if too many inexisting classes
         // search in post type xps-code with category php
         $args = [
