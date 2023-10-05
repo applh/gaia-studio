@@ -56,6 +56,16 @@ services:
         volumes:
             - ./docker-setup/nginx-templates:/etc/nginx/templates
 
+    playwright-node:
+        build: 
+            context: ./image-playwright
+            dockerfile: Dockerfile
+            target: node-playwright
+        restart: always
+        environment:
+            # for X11
+            - DISPLAY=host.docker.internal:0
+
 volumes:
     db_data:
     app_tmp:
