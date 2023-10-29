@@ -2,11 +2,11 @@
 
 curdir=`dirname $0`
 
-echo >> $curdir/cron.log
-app_date >> $curdir/cron.log
+echo >> $curdir/my-cron.log
+date >> $curdir/my-cron.log
 
 cd $curdir
-/usr/local/bin/php $curdir/test.php >> $curdir/cron.log
+/usr/local/bin/php $curdir/test.php >> $curdir/my-cron.log
 
 
 
