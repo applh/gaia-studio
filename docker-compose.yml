@@ -56,11 +56,21 @@ services:
         volumes:
             - ./docker-setup/nginx-templates:/etc/nginx/templates
 
-    playwright-node:
-        build: 
-            context: ./image-playwright
+    # playwright-node:
+    #     build: 
+    #         context: ./image-playwright
+    #         dockerfile: Dockerfile
+    #         target: node-playwright
+    #     restart: always
+    #     environment:
+    #         # for X11
+    #         - DISPLAY=host.docker.internal:0
+
+    php-fpm-jupyter:
+        build:
+            context: ./image-php-fpm-jupyter
             dockerfile: Dockerfile
-            target: node-playwright
+            target: php-fpm-jupyter
         restart: always
         environment:
             # for X11
