@@ -53,3 +53,44 @@ CMD ["/var/app_docker/docker_cmd.sh"]
 # CMD tail -f /var/app/logs/debug.log
 
 
+FROM node-playwright AS node-playwright-jupyter
+
+RUN apt-get install -y pipx python3-pip \
+        && pipx ensurepath
+
+RUN apt install -y python3-venv
+
+RUN mkdir -p /var/www/venv && \
+    python3 -m venv /var/www/venv
+
+RUN /var/www/venv/bin/pip install --upgrade pip
+RUN /var/www/venv/bin/pip install --upgrade setuptools
+RUN /var/www/venv/bin/pip install jupyter Pillow requests numpy opencv-python matplotlib ipython db-sqlite3 playwright
+
+
+# playwright and ipython setup
+RUN /var/www/venv/bin/playwright install
+
+# AT THE END TO AVOID REBUILDING PREVIOUS STEPS
+RUN apt install -y chromium
+
+#RUN /var/www/venv/bin/playwright install-deps
+RUN /var/www/venv/bin/playwright install chromium
+
+# ipython will need $HOME env variable
+# and playwright must be installed in $HOME/.cache
+# move /root/.cache to /var/www/home/.cache
+# change owner (recursive)
+
+
+RUN mkdir /var/www/home \
+        && mv /root/.cache /var/www/home/.cache \
+        && chown -R www-data:www-data /var/www/home \
+        && mkdir /var/code \
+        && chown -R www-data:www-data /var/code
+
+# PHP: add /var/code as volume for faster file access
+# TODO: copy PHP source code in /var/code
+
+RUN apt-get clean && apt-get autoclean
+

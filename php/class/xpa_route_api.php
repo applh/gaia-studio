@@ -113,7 +113,11 @@ class xpa_route_api
         }
 
         // return the updated list
-        $rows = xpa_model::read("job", order_by: "ORDER BY z DESC, created DESC", limit: $limit);
+        $rows = xpa_model::read("job", 
+            order_by: "ORDER BY z DESC, created DESC", 
+            limit: $limit,
+            where: "(z is null) OR (z > 0)",
+        );
         static::$response["jobs"] = $rows;
     }
 
