@@ -49,6 +49,7 @@ $now = date('Y-m-d H:i:s');
             <h1>UIKIT</h1>
             <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Cum quo sed, unde voluptatem commodi rerum harum quidem atque. Et consequuntur tempore similique dolor ratione explicabo necessitatibus nihil asperiores dolores suscipit?</p>
         </div>
+        <div data-src="/assets/photo.jpg" sizes="" uk-img class="uk-height-medium"></div>
         <section class="s2 uk-section">
             <h2>title2</h2>
             <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Cum quo sed, unde voluptatem commodi rerum harum quidem atque. Et consequuntur tempore similique dolor ratione explicabo necessitatibus nihil asperiores dolores suscipit?</p>
