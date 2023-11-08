@@ -1,18 +1,32 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
 import HelloWorld from './components/HelloWorld.vue'
+
+let menu = [
+  {
+    name: 'Home',
+    path: '/',
+  },
+  {
+    name: 'Settings',
+    path: '/settings',
+  },
+  {
+    name: 'About',
+    path: '/about',
+  },
+]
 </script>
 
 <template>
   <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-
     <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+      <HelloWorld msg="Welcome to Gaia Studio" />
 
       <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
+        <RouterLink v-for="item in menu" :key="item.name" :to="item.path">
+          {{ item.name }}
+        </RouterLink>
       </nav>
     </div>
   </header>
