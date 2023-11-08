@@ -4,7 +4,8 @@
     "plugins": [ "." ],
     "mappings": {
         "wp-content/plugins/xp-studio/php": "../php",
-        "wp-content/plugins/xp-studio/blocks/gutenpride": "../wp-blocks/gutenpride/build"
+        "wp-content/plugins/xp-studio/blocks/gutenpride": "../wp-blocks/gutenpride/build",
+        "dev/vue": "../vue-app/dist"
     },
     "port": 4567,
     "env": {
