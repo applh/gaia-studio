@@ -276,7 +276,7 @@ class xpw_hook
         // return a json response
         return new WP_REST_Response([
             "status" => "ok",
-            "nonce" => $nonce, // "X-XP-Nonce
+            "nonce" => $nonce, // "X-WP-Nonce
             "auth" => $auth,
             "date" => date("Y-m-d H:i:s"),
             "user" => wp_get_current_user(),

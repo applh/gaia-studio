@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { usePageStore } from '../stores/page'
+
 import type Node from 'element-plus/es/components/tree/src/model/node'
 import type { DragEvents } from 'element-plus/es/components/tree/src/model/useDragNode'
 import type {
@@ -54,63 +56,8 @@ const allowDrag = (draggingNode: Node) => {
   return !draggingNode.data.label.includes('Level three 3-1-1')
 }
 
-const data = [
-  {
-    label: 'Level one 1',
-    children: [
-      {
-        label: 'Level two 1-1',
-        children: [
-          {
-            label: 'Level three 1-1-1',
-          },
-        ],
-      },
-    ],
-  },
-  {
-    label: 'Level one 2',
-    children: [
-      {
-        label: 'Level two 2-1',
-        children: [
-          {
-            label: 'Level three 2-1-1',
-          },
-        ],
-      },
-      {
-        label: 'Level two 2-2',
-        children: [
-          {
-            label: 'Level three 2-2-1',
-          },
-        ],
-      },
-    ],
-  },
-  {
-    label: 'Level one 3',
-    children: [
-      {
-        label: 'Level two 3-1',
-        children: [
-          {
-            label: 'Level three 3-1-1',
-          },
-        ],
-      },
-      {
-        label: 'Level two 3-2',
-        children: [
-          {
-            label: 'Level three 3-2-1',
-          },
-        ],
-      },
-    ],
-  },
-]
+const pageStore = usePageStore()
+
 </script>
 
 <template>
@@ -119,15 +66,14 @@ const data = [
   </el-row>
   <el-row>
     <el-col :span="12">
-      <el-tree :allow-drop="allowDrop" :allow-drag="allowDrag" :data="data" draggable default-expand-all node-key="id"
+      <el-tree :allow-drop="allowDrop" :allow-drag="allowDrag" :data="pageStore.tree_data" draggable default-expand-all node-key="id"
         @node-drag-start="handleDragStart" @node-drag-enter="handleDragEnter" @node-drag-leave="handleDragLeave"
         @node-drag-over="handleDragOver" @node-drag-end="handleDragEnd" @node-drop="handleDrop" />
     </el-col>
-    <el-col :span="6">
-      <p>COL2</p>
-    </el-col>
-    <el-col :span="6">
-      <p>COL3</p>
+    <el-col :span="12">
+      <el-tree :allow-drop="allowDrop" :allow-drag="allowDrag" :data="pageStore.tree_data" draggable default-expand-all node-key="id"
+        @node-drag-start="handleDragStart" @node-drag-enter="handleDragEnter" @node-drag-leave="handleDragLeave"
+        @node-drag-over="handleDragOver" @node-drag-end="handleDragEnd" @node-drop="handleDrop" />
     </el-col>
   </el-row>
 </template>

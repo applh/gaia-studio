@@ -20,10 +20,13 @@ const onSubmit = () => {
   console.log('submit!')
 }
 
-
 const formatter = (row: User, column: TableColumnCtx<User>) => {
-  console.log(row, column)
-  return row.address
+  // console.log(row, column)
+  // limit to 160 characters
+  if (row.oval.length > 160) {
+    return row.oval.slice(0, 160) + '...'
+  }
+  return row.oval
 }
 
 const pageStore = usePageStore()
@@ -84,10 +87,9 @@ const pageStore = usePageStore()
       </el-form>
     </el-col>
     <el-col :span="24">
-      <el-table :data="pageStore.table_data" :default-sort="{ prop: 'date', order: 'descending' }" style="width: 100%">
-        <el-table-column prop="date" label="Date" sortable width="180" />
-        <el-table-column prop="name" label="Name" sortable width="180" />
-        <el-table-column prop="address" label="Address" sortable :formatter="formatter" />
+      <el-table :data="pageStore.table_data" :default-sort="{ prop: 'oname', order: 'ascending' }" style="width: 100%">
+        <el-table-column prop="oname" label="Name" sortable width="180" />
+        <el-table-column prop="oval" label="Value" sortable :formatter="formatter" />
       </el-table>
     </el-col>
   </el-row>

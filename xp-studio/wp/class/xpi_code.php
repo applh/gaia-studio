@@ -1,4 +1,5 @@
 <?php
+
 /**
  * xpi_code
  * 
@@ -14,10 +15,10 @@ class xpi_code
 {
     //#class_start
 
-    static function check_user ()
+    static function check_user()
     {
         // security check
- 
+
         // check if current user can update plugins
         if (current_user_can('activate_plugins')) {
             // get current user capabilities
@@ -26,34 +27,115 @@ class xpi_code
         return $access_ok ?? false;
     }
 
-    static function test ()
+    static function test()
     {
-        $table_data = [
+        $res = "";
+        // check user
+        if (!xpi_code::check_user()) {
+            return $res;
+        }
+
+        $table_data = [];
+        // get all options from WP
+        $options = wp_load_alloptions();
+        // loop on options and add to table_data
+        foreach ($options as $key => $value) {
+            $table_data[] = [
+                "oname" => $key,
+                "oval" => $value,
+            ];
+        }
+
+
+        $tree_data = [
             [
-                "date" => '2023-05-03',
-                "name" => 'baba',
-                "address" =>'No. 001, Grove St, Los Angeles',
+                "label" => "A10",
+                "children" => [
+                    [
+                        "label" => "Level two 1-1",
+                        "children" => [
+                            [
+                                "label" => "Level three 1-1-1"
+                            ]
+                        ]
+                    ]
+                ]
             ],
             [
-                "date" => '2023-05-02',
-                "name" => 'bebe',
-                "address" =>'No. 002, Grove St, Los Angeles',
+                "label" => "A20",
+                "children" => [
+                    [
+                        "label" => "Level two 2-1",
+                        "children" => [
+                            [
+                                "label" => "Level three 2-1-1"
+                            ]
+                        ]
+                    ],
+                    [
+                        "label" => "Level two 2-2",
+                        "children" => [
+                            [
+                                "label" => "Level three 2-2-1"
+                            ]
+                        ]
+                    ]
+                ]
             ],
             [
-                "date" => '2023-05-04',
-                "name" => 'bibi',
-                "address" =>'No. 003, Grove St, Los Angeles',
+                "label" => "A30",
+                "children" => [
+                    [
+                        "label" => "Level two 3-1",
+                        "children" => [
+                            [
+                                "label" => "Level three 3-1-1"
+                            ]
+                        ]
+                    ],
+                    [
+                        "label" => "Level two 3-2",
+                        "children" => [
+                            [
+                                "label" => "Level three 3-2-1"
+                            ]
+                        ]
+                    ]
+                ]
+            ],
+            [
+                "label" => "A40",
+                "children" => [
+                    [
+                        "label" => "Level two 3-1",
+                        "children" => [
+                            [
+                                "label" => "Level three 3-1-1"
+                            ]
+                        ]
+                    ],
+                    [
+                        "label" => "Level two 3-2",
+                        "children" => [
+                            [
+                                "label" => "Level three 3-2-1"
+                            ]
+                        ]
+                    ]
+                ]
             ],
         ];
+
         return [
-            "test" => "ok", 
+            "test" => "ok",
             "time" => date("Y-m-d H:i:s"),
             "table_data" => $table_data,
+            "tree_data" => $tree_data,
             "user" => wp_get_current_user(),
         ];
     }
 
-    static function config_load ()
+    static function config_load()
     {
         $res = "";
         // check user
@@ -69,14 +151,13 @@ class xpi_code
         if (file_exists($path_config)) {
             // load config
             $res = file_get_contents($path_config);
-        }
-        else {
+        } else {
             $res = "file not found: " . $path_config;
         }
         return $res;
     }
 
-    static function config_save ()
+    static function config_save()
     {
         $res = "";
         // check user
@@ -100,14 +181,13 @@ class xpi_code
                 file_put_contents($path_config, $code);
                 $res = "config saved";
             }
-        }
-        else {
+        } else {
             $res = "file not found: " . $path_config;
         }
         return $res;
     }
-    
-    static function load_data ()
+
+    static function load_data()
     {
         $res = [];
         // check user
@@ -137,7 +217,7 @@ class xpi_code
         $founds = $query->get_posts();
 
         // check if found
-        foreach($founds as $post) {
+        foreach ($founds as $post) {
             // get the excerpt
             $excerpt = $post->post_excerpt;
             $post_name = $post->post_name;
@@ -153,7 +233,7 @@ class xpi_code
         return $res;
     }
 
-    static function create ()
+    static function create()
     {
         $res = [];
         // check user
@@ -216,7 +296,7 @@ class xpi_code
         return $res;
     }
 
-    static function delete ()
+    static function delete()
     {
         $res = [];
         // check user
