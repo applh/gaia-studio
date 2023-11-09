@@ -12,7 +12,8 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: HomeView
+      component: () => import('../views/HomeView.vue')
+
     },
     {
       path: '/settings',
@@ -34,6 +35,6 @@ const router = createRouter({
 })
 
 // set home as default route
-router.push({ name: 'home', replace: true })
+// router.push({ name: 'home', replace: true })
 
 export default router

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { reactive } from 'vue'
+import type { TableColumnCtx } from 'element-plus'
 
 // do not use same name with ref
 const form = reactive({
@@ -16,6 +17,39 @@ const form = reactive({
 const onSubmit = () => {
   console.log('submit!')
 }
+
+interface User {
+  date: string
+  name: string
+  address: string
+}
+
+const formatter = (row: User, column: TableColumnCtx<User>) => {
+  return row.address
+}
+
+const tableData: User[] = [
+  {
+    date: '2016-05-03',
+    name: 'tata',
+    address: 'No. 001, Grove St, Los Angeles',
+  },
+  {
+    date: '2016-05-02',
+    name: 'tete',
+    address: 'No. 002, Grove St, Los Angeles',
+  },
+  {
+    date: '2016-05-04',
+    name: 'titi',
+    address: 'No. 003, Grove St, Los Angeles',
+  },
+  {
+    date: '2016-05-01',
+    name: 'toto',
+    address: 'No. 004, Grove St, Los Angeles',
+  },
+]
 </script>
 
 <template>
@@ -23,7 +57,7 @@ const onSubmit = () => {
     <h1>Home</h1>
   </el-row>
   <el-row>
-    <el-col :span="12">
+    <el-col :span="24">
       <el-form :model="form" label-width="120px">
     <el-form-item label="Activity name">
       <el-input v-model="form.name" />
@@ -78,12 +112,18 @@ const onSubmit = () => {
       <el-button type="primary" @click="onSubmit">Create</el-button>
       <el-button>Cancel</el-button>
     </el-form-item>
-  </el-form>    </el-col>
-    <el-col :span="6">
-      <p>COL2</p>
-    </el-col>
-    <el-col :span="6">
-      <p>COL3</p>
+  </el-form>    
+</el-col>
+    <el-col :span="24">
+      <el-table
+    :data="tableData"
+    :default-sort="{ prop: 'date', order: 'descending' }"
+    style="width: 100%"
+  >
+    <el-table-column prop="date" label="Date" sortable width="180" />
+    <el-table-column prop="name" label="Name" sortable width="180" />
+    <el-table-column prop="address" label="Address" sortable :formatter="formatter" />
+  </el-table>
     </el-col>
   </el-row>
 </template>
