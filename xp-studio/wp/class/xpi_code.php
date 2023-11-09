@@ -26,6 +26,33 @@ class xpi_code
         return $access_ok ?? false;
     }
 
+    static function test ()
+    {
+        $table_data = [
+            [
+                "date" => '2023-05-03',
+                "name" => 'baba',
+                "address" =>'No. 001, Grove St, Los Angeles',
+            ],
+            [
+                "date" => '2023-05-02',
+                "name" => 'bebe',
+                "address" =>'No. 002, Grove St, Los Angeles',
+            ],
+            [
+                "date" => '2023-05-04',
+                "name" => 'bibi',
+                "address" =>'No. 003, Grove St, Los Angeles',
+            ],
+        ];
+        return [
+            "test" => "ok", 
+            "time" => date("Y-m-d H:i:s"),
+            "table_data" => $table_data,
+            "user" => wp_get_current_user(),
+        ];
+    }
+
     static function config_load ()
     {
         $res = "";

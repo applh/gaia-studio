@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
 
 let base_url = import.meta.env.BASE_URL;
 console.log('base_url', base_url);

@@ -7,24 +7,24 @@ import type {
 } from 'element-plus/es/components/tree/src/tree.type'
 
 const handleDragStart = (node: Node, ev: DragEvents) => {
-  console.log('drag start', node)
+  console.log('drag start', node, ev)
 }
 const handleDragEnter = (
   draggingNode: Node,
   dropNode: Node,
   ev: DragEvents
 ) => {
-  console.log('tree drag enter:', dropNode.label)
+  console.log('tree drag enter:', dropNode.label, ev)
 }
 const handleDragLeave = (
   draggingNode: Node,
   dropNode: Node,
   ev: DragEvents
 ) => {
-  console.log('tree drag leave:', dropNode.label)
+  console.log('tree drag leave:', dropNode.label, ev)
 }
 const handleDragOver = (draggingNode: Node, dropNode: Node, ev: DragEvents) => {
-  console.log('tree drag over:', dropNode.label)
+  console.log('tree drag over:', dropNode.label, ev)
 }
 const handleDragEnd = (
   draggingNode: Node,
@@ -32,15 +32,16 @@ const handleDragEnd = (
   dropType: NodeDropType,
   ev: DragEvents
 ) => {
-  console.log('tree drag end:', dropNode && dropNode.label, dropType)
+  console.log('tree drag end:', dropNode && dropNode.label, dropType, ev)
 }
+
 const handleDrop = (
   draggingNode: Node,
   dropNode: Node,
   dropType: NodeDropType,
   ev: DragEvents
 ) => {
-  console.log('tree drop:', dropNode.label, dropType)
+  console.log('tree drop:', dropNode.label, dropType, ev)
 }
 const allowDrop = (draggingNode: Node, dropNode: Node, type: AllowDropType) => {
   if (dropNode.data.label === 'Level two 3-1') {

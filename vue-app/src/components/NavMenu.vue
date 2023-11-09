@@ -1,13 +1,14 @@
+
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
 import { ref } from 'vue'
+import { RouterLink } from 'vue-router'
 
 const activeIndex = ref('0')
 const handleSelect = (key: string, keyPath: string[]) => {
   console.log(key, keyPath)
 }
 
-let menu = [
+const menu = [
   {
     name: 'Home',
     path: '/',
@@ -28,7 +29,7 @@ let menu = [
         <el-menu-item index="0">
             <span>GAIA Studio</span>
         </el-menu-item>
-        <div class="flex-grow" />
+        <div class="flex-grow"></div>
         <el-menu-item v-for="(item, i) in menu" :key="item.name" :index="'' + i">
             <RouterLink :key="item.name" :to="item.path">
                 {{ item.name }}
