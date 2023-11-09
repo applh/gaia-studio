@@ -1,8 +1,13 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 
+let base_url = import.meta.env.BASE_URL;
+console.log('base_url', base_url);
+base_url = window.location.pathname;
+console.log('base_url', base_url);
+
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHistory(base_url),
   routes: [
     {
       path: '/',
@@ -27,5 +32,8 @@ const router = createRouter({
     },
   ]
 })
+
+// set home as default route
+router.push({ name: 'home', replace: true })
 
 export default router
