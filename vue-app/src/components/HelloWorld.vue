@@ -10,6 +10,7 @@ defineProps<{
     <h2 class="green">CMS + Web App + Container App + WP plugin</h2>
     <p>Here you can extend your WP site with new and powerful features</p>
   </div>
+  <el-button type="success">Success</el-button>
 </template>
 
 <style scoped>
